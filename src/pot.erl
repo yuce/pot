@@ -7,10 +7,18 @@
 -export([valid_totp/2, valid_totp/3]).
 
 
+-type token() :: binary().
+-type secret() :: binary().
+-type proplistitem() :: {atom(), term()}.
+-type proplist() :: [proplistitem()] | [].
+
+
+-spec valid_token(token()) -> boolean().
 valid_token(Token) ->
     valid_token(Token, []).
 
 
+-spec valid_token(token(), proplist()) -> boolean().
 valid_token(Token, Opts) when is_binary(Token) ->
     Length = proplists:get_value(token_length, Opts, 6),
     case byte_size(Token) == Length of
@@ -20,10 +28,12 @@ valid_token(Token, Opts) when is_binary(Token) ->
             false end.
 
 
+-spec hotp(secret(), pos_integer()) -> token().
 hotp(Secret, IntervalsNo) ->
     hotp(Secret, IntervalsNo, []).
 
 
+-spec hotp(secret(), pos_integer(), proplist()) -> token().
 hotp(Secret, IntervalsNo, Opts) ->
     DigestMethod = proplists:get_value(digest_method, Opts, sha),
     TokenLength = proplists:get_value(token_length, Opts, 6),
@@ -40,10 +50,12 @@ hotp(Secret, IntervalsNo, Opts) ->
     <<0:(TokenLength - byte_size(Token1))/integer-unit:8, Token1/binary>>.
 
 
+-spec totp(secret()) -> token().
 totp(Secret) ->
     totp(Secret, []).
 
 
+-spec totp(secret(), proplist()) -> token().
 totp(Secret, Opts) ->
     IntervalLength = proplists:get_value(interval_length, Opts, 30),
     {MegaSecs, Secs, _} = os:timestamp(),
@@ -51,10 +63,12 @@ totp(Secret, Opts) ->
     hotp(Secret, IntervalsNo, Opts).
 
 
+-spec valid_hotp(token(), secret()) -> boolean().
 valid_hotp(Token, Secret) ->
     valid_hotp(Token, Secret, []).
 
 
+-spec valid_hotp(token(), secret(), proplist()) -> boolean().
 valid_hotp(Token, Secret, Opts) ->
     Last = proplists:get_value(last, Opts, 1),
     Trials = proplists:get_value(trials, Opts, 1000),
@@ -66,10 +80,12 @@ valid_hotp(Token, Secret, Opts) ->
             false end.
 
 
+-spec valid_totp(token(), secret()) -> boolean().
 valid_totp(Token, Secret) ->
     valid_totp(Token, Secret, []).
 
 
+-spec valid_totp(token(), secret(), proplist()) -> boolean().
 valid_totp(Token, Secret, Opts) ->
     case valid_token(Token, Opts) of
         true ->
