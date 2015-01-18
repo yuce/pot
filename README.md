@@ -34,7 +34,7 @@ A `Makefile` is included which you can use to `make` and `make test`.
 
 ## Usage
 
-Include POT in your `rebar config`:
+Include POT in your `rebar.config`:
 
     {deps, [
         {pot, ".*",
