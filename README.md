@@ -16,7 +16,7 @@ In order to learn more about one time password generation, see the following Wik
 
 ### TODO
 
-- Usage samples for other Erlang VM based languages such as Elixir and LFE.
+- Usage samples for other Erlang VM based languages such as [Elixir](http://elixir-lang.org/) and [LFE](http://lfe.io/).
 
 ## Install
 
