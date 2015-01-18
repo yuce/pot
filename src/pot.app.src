@@ -1,0 +1,7 @@
+{application, pot, [{description, "One Time Passwords for Erlang"},
+                    {vsn, "1"},
+                    {modules, [pot]},
+                    {registered, []},
+                    {applications, [kernel,
+                                   stdlib]},
+                    {env, []}]}.
