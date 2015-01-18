@@ -1,6 +1,6 @@
 REBAR = ./rebar
 
-.PHONY: all deps compile clean test
+.PHONY: all deps compile clean test dialyze
 
 all: deps compile
 
@@ -16,3 +16,6 @@ clean:
 
 test:
 	$(REBAR) skip_deps=true eunit
+
+dialyze:
+	dialyzer -r src deps/base32/src --src
