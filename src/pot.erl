@@ -82,7 +82,7 @@ valid_totp(Token, Secret, Opts) ->
             false end.
 
 
-check_candidate(Token, Secret, Current, Last, Opts) ->
+check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
     case Current of
         Last ->
             false;
