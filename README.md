@@ -16,29 +16,16 @@ In order to learn more about one time password generation, see the following Wik
 
 ### TODO
 
-- Usage samples for other Erlang VM based languages such as [Elixir](http://elixir-lang.org/) and [LFE](http://lfe.io/).
+- Documentation.
 
-## Install
+## Usage (Erlang)
 
 POT uses [rebar v2](https://github.com/rebar/rebar) for managing dependencies and building the library. Only dependency is Erlang [base32](https://github.com/aetrion/base32_erlang) library which is automatically fetched with rebar.
 
-Fetch dependencies and compile the library once it is cloned:
-
-    $ ./rebar get-deps compile
-    
-Run tests with:
-
-    $ ./rebar skip_deps=true eunit
-    
-A `Makefile` is included which you can use to `make` and `make test`.
-
-## Usage
-
 Include POT in your `rebar.config`:
 
-    {deps, [
-        {pot, ".*",
-            {git, "https://github.com/yuce/pot.git", "master"}}]}.
+    {deps, [{pot, ".*",
+                {git, "https://github.com/yuce/pot.git", "master"}}]}.
 
 POT works with binary tokens and secrets.
 
@@ -67,5 +54,41 @@ POT works with binary tokens and secrets.
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     Token = <<"123456">>,
     LastUsed = 5,  % last successful trial
-    IsValid = pot:valid_hotp(Secret, Token, [{last, LastUsed]),
+    IsValid = pot:valid_hotp(Secret, Token, [{last, LastUsed}]),
     % Do something
+
+## Usage (Elixir)
+
+Include POT in your `mix.exs` as a dependency:
+
+    defp deps do
+      [{:pot, git: "https://github.com/yuce/pot.git"}]
+    end
+
+### Create a time base token
+
+    secret = "MFRGGZDFMZTWQ2LK"
+    token = :pot.totp(secret)
+    # Do something with the token
+    
+### Create an HMAC based token
+
+    secret = "MFRGGZDFMZTWQ2LK"
+    current_trial = 3
+    token = :pot.hotp(secret, current_trial)
+    # Do something with the token
+
+### Check some time based token
+
+    secret = "MFRGGZDFMZTWQ2LK"
+    token = "123456"
+    is_valid = :pot.valid_totp(secret, token)
+    # Do something
+    
+### Check some HMAC based token
+    
+    secret = "MFRGGZDFMZTWQ2LK"
+    token = "123456"
+    last_used = 5  # last successful trial
+    is_valid = :pot.valid_hotp(secret, token, [{:last, last_used}])
+    # Do something
