@@ -3,10 +3,9 @@ defmodule Pot.Mixfile do
 
   def project do
     [app: :pot,
-     version: "0.9.1",
+     version: "0.9.2",
      description: description,
-     package: package,
-     deps: deps]
+     package: package]
   end
 
   defp description do
@@ -20,10 +19,6 @@ defmodule Pot.Mixfile do
      contributors: ["Yuce Tekol"],
      licenses: ["MIT"],
      links: %{"GitHub" => "https://github.com/yuce/pot"}]
-  end
-
-  defp deps do
-    [{:base32, git: "https://github.com/aetrion/base32_erlang.git"}]
   end
 
 end
