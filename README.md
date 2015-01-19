@@ -6,7 +6,7 @@ POT is an Erlang library for generating one time passwords. It supports both HMA
 
 POT is an almost direct translation of the Python [OneTimePass](https://github.com/tadeck/onetimepass) library.
 
-POT should work with any recent version of [Erlang/OTP](http://www.erlang.org/) but only tested with version 17.
+POT should work with any recent version of [Erlang/OTP](http://www.erlang.org/), [Elixir](http://elixir-lang.org/) and other Erlang VM based languages.
 
 In order to learn more about one time password generation, see the following Wikipedia articles:
 
@@ -18,23 +18,31 @@ In order to learn more about one time password generation, see the following Wik
 
 - Documentation.
 
+## News
+
+- **2015/01/20**
+  - Embedded base32_erlang library  
+- **2015/01/18**
+  - Initial version
+
+
 ## Usage (Erlang)
 
-POT uses [rebar v2](https://github.com/rebar/rebar) for managing dependencies and building the library. Only dependency is Erlang [base32](https://github.com/aetrion/base32_erlang) library which is automatically fetched with rebar.
+POT uses [rebar v2](https://github.com/rebar/rebar) for managing dependencies and building the library.
 
 Include POT in your `rebar.config`:
 
-    {deps, [{pot, ".*",
-                {git, "https://github.com/yuce/pot.git", "master"}}]}.
+    {deps, [
+        {pot, ".*", {git, "https://github.com/yuce/pot.git", "master"}}]}.
 
 POT works with binary tokens and secrets.
 
-### Create a time base token
+### Create a time based token
 
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     Token = pot:totp(Secret),
     % Do something with the token
-    
+
 ### Create an HMAC based token
 
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
@@ -48,9 +56,9 @@ POT works with binary tokens and secrets.
     Token = <<"123456">>,
     IsValid = pot:valid_totp(Secret, Token),
     % Do something
-    
+
 ### Check some HMAC based token
-    
+
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     Token = <<"123456">>,
     LastUsed = 5,  % last successful trial
@@ -65,12 +73,12 @@ Include POT in your `mix.exs` as a dependency:
       [{:pot, git: "https://github.com/yuce/pot.git"}]
     end
 
-### Create a time base token
+### Create a time based token
 
     secret = "MFRGGZDFMZTWQ2LK"
     token = :pot.totp(secret)
     # Do something with the token
-    
+
 ### Create an HMAC based token
 
     secret = "MFRGGZDFMZTWQ2LK"
@@ -84,11 +92,17 @@ Include POT in your `mix.exs` as a dependency:
     token = "123456"
     is_valid = :pot.valid_totp(secret, token)
     # Do something
-    
+
 ### Check some HMAC based token
-    
+
     secret = "MFRGGZDFMZTWQ2LK"
     token = "123456"
     last_used = 5  # last successful trial
     is_valid = :pot.valid_hotp(secret, token, [{:last, last_used}])
     # Do something
+
+## Credits
+
+- Yuce Tekol
+- Tomasz Jaskowski: [OneTimePass](https://github.com/tadeck/onetimepass) Python library
+- Andrew Tunnell-Jones: [base32_erlang](https://github.com/aetrion/base32_erlang) library
