@@ -3,7 +3,7 @@ defmodule Pot.Mixfile do
 
   def project do
     [app: :pot,
-     version: "0.9",
+     version: "0.9.0",
      description: description,
      package: package,
      deps: deps]
