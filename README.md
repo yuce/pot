@@ -54,7 +54,7 @@ POT works with binary tokens and secrets.
 
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     Token = <<"123456">>,
-    IsValid = pot:valid_totp(Secret, Token),
+    IsValid = pot:valid_totp(Token, Secret),
     % Do something
 
 ### Check some HMAC based token
@@ -62,7 +62,7 @@ POT works with binary tokens and secrets.
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     Token = <<"123456">>,
     LastUsed = 5,  % last successful trial
-    IsValid = pot:valid_hotp(Secret, Token, [{last, LastUsed}]),
+    IsValid = pot:valid_hotp(Token, Secret, [{last, LastUsed}]),
     % Do something
 
 ## Usage (Elixir)
@@ -90,7 +90,7 @@ Include POT in your `mix.exs` as a dependency:
 
     secret = "MFRGGZDFMZTWQ2LK"
     token = "123456"
-    is_valid = :pot.valid_totp(secret, token)
+    is_valid = :pot.valid_totp(token, secret)
     # Do something
 
 ### Check some HMAC based token
@@ -98,7 +98,7 @@ Include POT in your `mix.exs` as a dependency:
     secret = "MFRGGZDFMZTWQ2LK"
     token = "123456"
     last_used = 5  # last successful trial
-    is_valid = :pot.valid_hotp(secret, token, [{:last, last_used}])
+    is_valid = :pot.valid_hotp(token, secret, [{:last, last_used}])
     # Do something
 
 ## Credits
