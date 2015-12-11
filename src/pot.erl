@@ -64,7 +64,7 @@ hotp(Secret, IntervalsNo, Opts) ->
     TokenBase = TokenBase0 band 16#7fffffff,
     Token0 = TokenBase rem trunc(math:pow(10, TokenLength)),
     Token1 = integer_to_binary(Token0),
-    <<0:(TokenLength - byte_size(Token1))/integer-unit:8, Token1/binary>>.
+    <<48:(TokenLength - byte_size(Token1))/integer-unit:8, Token1/binary>>.
 
 
 -spec totp(secret()) -> token().
@@ -74,9 +74,7 @@ totp(Secret) ->
 
 -spec totp(secret(), proplist()) -> token().
 totp(Secret, Opts) ->
-    IntervalLength = proplists:get_value(interval_length, Opts, 30),
-    {MegaSecs, Secs, _} = os:timestamp(),
-    IntervalsNo = trunc((MegaSecs * 1000000 + Secs) / IntervalLength),
+    IntervalsNo = time_interval(Opts),
     hotp(Secret, IntervalsNo, Opts).
 
 
@@ -106,14 +104,21 @@ valid_totp(Token, Secret) ->
 valid_totp(Token, Secret, Opts) ->
     case valid_token(Token, Opts) of
         true ->
+            IntervalsNo = time_interval(Opts),
             case totp(Secret, Opts) of
                 Token ->
                     true;
                 _ ->
-                    false end;
+                    Window = proplists:get_value(window, Opts, 0),
+                    check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) end;
         _ ->
             false end.
 
+
+time_interval(Opts) ->
+  IntervalLength = proplists:get_value(interval_length, Opts, 30),
+  {MegaSecs, Secs, _} = os:timestamp(),
+  trunc((MegaSecs * 1000000 + Secs) / IntervalLength).
 
 check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
     case Current of
@@ -126,4 +131,3 @@ check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
                     Current;
                 _ ->
                     check_candidate(Token, Secret, Current + 1, Last, Opts) end end.
-
