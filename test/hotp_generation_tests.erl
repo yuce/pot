@@ -14,6 +14,11 @@ hotp_generation_for_different_intervals_test_() ->
             fun stop/1,
             fun hotp_generation_for_different_intervals/1}.
 
+hotp_generation_with_padding_test_() ->
+    {setup, fun start/0,
+            fun stop/1,
+            fun hotp_generation_with_padding/1}.
+
 
 start() ->
     ok.
@@ -32,3 +37,7 @@ hotp_generation_for_different_intervals(_) ->
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     [?_assertEqual(pot:hotp(Secret, 1), <<"765705">>),
      ?_assertEqual(pot:hotp(Secret, 2), <<"816065">>)].
+
+hotp_generation_with_padding(_) ->
+   Secret = <<"MFRGGZDFMZTWQ2LK">>,
+   [?_assertEqual(pot:hotp(Secret, 19), <<"088239">>)].
