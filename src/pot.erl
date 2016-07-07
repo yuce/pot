@@ -64,8 +64,7 @@ hotp(Secret, IntervalsNo, Opts) ->
     TokenBase = TokenBase0 band 16#7fffffff,
     Token0 = TokenBase rem trunc(math:pow(10, TokenLength)),
     Token1 = integer_to_binary(Token0),
-    <<48:(TokenLength - byte_size(Token1))/integer-unit:8, Token1/binary>>.
-
+    prepend_zeros(Token1, TokenLength - byte_size(Token1)).
 
 -spec totp(secret()) -> token().
 totp(Secret) ->
@@ -131,3 +130,10 @@ check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
                     Current;
                 _ ->
                     check_candidate(Token, Secret, Current + 1, Last, Opts) end end.
+
+-spec prepend_zeros(token(), pos_integer()) -> token().
+prepend_zeros(Token, N) ->
+    case N of
+        0 -> Token;
+        _ -> prepend_zeros(<<48:8,Token/binary>>, N-1)
+    end.
