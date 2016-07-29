@@ -20,6 +20,8 @@ In order to learn more about one time password generation, see the following Wik
 
 ## News
 
+- **2016/07/30**
+  - Released version 0.9.5 with bug fixes (Thanks to Peter McLain)
 - **2015/01/20**
   - Embedded base32_erlang library
 - **2015/01/18**
@@ -28,12 +30,9 @@ In order to learn more about one time password generation, see the following Wik
 
 ## Usage (Erlang)
 
-POT uses [rebar v2](https://github.com/rebar/rebar) for managing dependencies and building the library.
+We recommend using [rebar3](https://github.com/erlang/rebar3) for managing dependencies and building the library. POT is available on hex.pm, so you can just include the following in your `rebar.config`:
 
-Include POT in your `rebar.config`:
-
-    {deps, [
-        {pot, ".*", {git, "https://github.com/yuce/pot.git", "master"}}]}.
+{deps, [pot]}.
 
 POT works with binary tokens and secrets.
 

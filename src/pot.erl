@@ -131,9 +131,7 @@ check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
                 _ ->
                     check_candidate(Token, Secret, Current + 1, Last, Opts) end end.
 
--spec prepend_zeros(token(), pos_integer()) -> token().
+-spec prepend_zeros(token(), non_neg_integer()) -> token().
 prepend_zeros(Token, N) ->
-    case N of
-        0 -> Token;
-        _ -> prepend_zeros(<<48:8,Token/binary>>, N-1)
-    end.
+    Padding = << <<48:8>> || _ <- lists:seq(1, N) >>,
+    <<Padding/binary, Token/binary>>.
