@@ -40,67 +40,85 @@ POT works with binary tokens and secrets.
 
 ### Create a time based token
 
-    Secret = <<"MFRGGZDFMZTWQ2LK">>,
-    Token = pot:totp(Secret),
-    % Do something with the token
+```erlang
+Secret = <<"MFRGGZDFMZTWQ2LK">>,
+Token = pot:totp(Secret),
+% Do something with the token
+```
 
 ### Create an HMAC based token
 
-    Secret = <<"MFRGGZDFMZTWQ2LK">>,
-    CurrentTrial = 3,
-    Token = pot:hotp(Secret, CurrentTrial),
-    % Do something with the token
+```erlang
+Secret = <<"MFRGGZDFMZTWQ2LK">>,
+CurrentTrial = 3,
+Token = pot:hotp(Secret, CurrentTrial),
+% Do something with the token
+```
 
 ### Check some time based token
 
-    Secret = <<"MFRGGZDFMZTWQ2LK">>,
-    Token = <<"123456">>,
-    IsValid = pot:valid_totp(Token, Secret),
-    % Do something
+```erlang
+Secret = <<"MFRGGZDFMZTWQ2LK">>,
+Token = <<"123456">>,
+IsValid = pot:valid_totp(Token, Secret),
+% Do something
+```
 
 ### Check some HMAC based token
 
-    Secret = <<"MFRGGZDFMZTWQ2LK">>,
-    Token = <<"123456">>,
-    LastUsed = 5,  % last successful trial
-    IsValid = pot:valid_hotp(Token, Secret, [{last, LastUsed}]),
-    % Do something
+```erlang
+Secret = <<"MFRGGZDFMZTWQ2LK">>,
+Token = <<"123456">>,
+LastUsed = 5,  % last successful trial
+IsValid = pot:valid_hotp(Token, Secret, [{last, LastUsed}]),
+% Do something
+```
 
 ## Usage (Elixir)
 
 Include POT in your `mix.exs` as a dependency:
 
-    defp deps do
-      [{:pot, git: "https://github.com/yuce/pot.git"}]
-    end
+```elixir
+defp deps do
+    [{:pot, "~>0.9.5"}]
+end
+```
 
 ### Create a time based token
 
-    secret = "MFRGGZDFMZTWQ2LK"
-    token = :pot.totp(secret)
-    # Do something with the token
+```elixir
+secret = "MFRGGZDFMZTWQ2LK"
+token = :pot.totp(secret)
+# Do something with the token
+```
 
 ### Create an HMAC based token
 
-    secret = "MFRGGZDFMZTWQ2LK"
-    current_trial = 3
-    token = :pot.hotp(secret, current_trial)
-    # Do something with the token
+```elixir
+secret = "MFRGGZDFMZTWQ2LK"
+current_trial = 3
+token = :pot.hotp(secret, current_trial)
+# Do something with the token
+```
 
 ### Check some time based token
 
-    secret = "MFRGGZDFMZTWQ2LK"
-    token = "123456"
-    is_valid = :pot.valid_totp(token, secret)
-    # Do something
+```elixir
+secret = "MFRGGZDFMZTWQ2LK"
+token = "123456"
+is_valid = :pot.valid_totp(token, secret)
+# Do something
+```
 
 ### Check some HMAC based token
 
-    secret = "MFRGGZDFMZTWQ2LK"
-    token = "123456"
-    last_used = 5  # last successful trial
-    is_valid = :pot.valid_hotp(token, secret, [{:last, last_used}])
-    # Do something
+```elixir
+secret = "MFRGGZDFMZTWQ2LK"
+token = "123456"
+last_used = 5  # last successful trial
+is_valid = :pot.valid_hotp(token, secret, [{:last, last_used}])
+# Do something
+```
 
 ## Credits
 
