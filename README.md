@@ -32,7 +32,9 @@ In order to learn more about one time password generation, see the following Wik
 
 We recommend using [rebar3](https://github.com/erlang/rebar3) for managing dependencies and building the library. POT is available on hex.pm, so you can just include the following in your `rebar.config`:
 
+```
 {deps, [pot]}.
+```
 
 POT works with binary tokens and secrets.
 
