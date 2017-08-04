@@ -22,6 +22,7 @@
 -export([totp/1, totp/2]).
 -export([valid_hotp/2, valid_hotp/3]).
 -export([valid_totp/2, valid_totp/3]).
+-export([time_interval/1]).
 
 
 -type token() :: binary().
@@ -110,7 +111,7 @@ valid_totp(Token, Secret, Opts) ->
                 _ ->
                     Window = proplists:get_value(window, Opts, 0),
                     AddWindow = proplists:get_value(addwindow, Opts, 0),
-                    check_candidate(Token, Secret, IntervalsNo - AddWindow, IntervalsNo + Window, Opts) end;
+                    check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + AddWindow, Opts) end;
         _ ->
             false end.
 
