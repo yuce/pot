@@ -29,7 +29,7 @@
 -type secret() :: binary().
 -type proplistitem() :: {atom(), term()}.
 -type proplist() :: [proplistitem()] | [].
-
+-type time() :: integer().
 
 -spec valid_token(token()) -> boolean().
 valid_token(Token) ->
@@ -115,7 +115,7 @@ valid_totp(Token, Secret, Opts) ->
         _ ->
             false end.
 
--spec time_interval(proplist()).
+-spec time_interval(proplist()) -> time().
 time_interval(Opts) ->
   IntervalLength = proplists:get_value(interval_length, Opts, 30),
   AddSeconds = proplists:get_value(addwindow, Opts, 0) * proplists:get_value(interval_length, Opts, 30),
