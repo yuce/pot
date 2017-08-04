@@ -1,4 +1,4 @@
-%% Copyright (c) 2014-2016 Yüce Tekol
+%% Copyright (c) 2014-2017 Yüce Tekol
 %
 %% Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 %% and associated documentation files (the "Software"), to deal in the Software without
@@ -23,7 +23,6 @@
 -export([valid_hotp/2, valid_hotp/3]).
 -export([valid_totp/2, valid_totp/3]).
 -export([time_interval/1]).
--export([check_candidate/5]).
 
 
 -type token() :: binary().
@@ -111,7 +110,10 @@ valid_totp(Token, Secret, Opts) ->
                     true;
                 _ ->
                     Window = proplists:get_value(window, Opts, 0),
-                    check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) end;
+                    case check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) of
+                        false -> false
+                        _ -> true
+                    end end;
         _ ->
             false end.
 
@@ -122,7 +124,6 @@ time_interval(Opts) ->
   {MegaSecs, Secs, _} = os:timestamp(),
   trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
 
--spec check_candidate(token(), secret(), time(), time(), proplist()) -> boolean().
 check_candidate(Token, Secret, Current, Last, Opts) ->
     case Current of
         Last ->
