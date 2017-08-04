@@ -110,7 +110,10 @@ valid_totp(Token, Secret, Opts) ->
                     true;
                 _ ->
                     Window = proplists:get_value(window, Opts, 0),
-                    check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) end;
+                    case check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) of
+                        false -> false;
+                        _ -> true;
+                    end end;
         _ ->
             false end.
 
