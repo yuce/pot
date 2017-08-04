@@ -114,7 +114,7 @@ valid_totp(Token, Secret, Opts) ->
                     case check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) of
                         false -> false;
                         _ -> true;
-                    end end;
+                    end end.
         _ ->
             false end.
 
