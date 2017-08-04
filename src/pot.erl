@@ -109,14 +109,15 @@ valid_totp(Token, Secret, Opts) ->
                     true;
                 _ ->
                     Window = proplists:get_value(window, Opts, 0),
-                    check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) end;
+                    AddWindow = proplists:get_value(addwindow, Opts, 0),
+                    check_candidate(Token, Secret, IntervalsNo - Window - AddWindow, IntervalsNo + Window, Opts) end;
         _ ->
             false end.
 
 
 time_interval(Opts) ->
-  AddSeconds = proplists:get_value(addseconds, Opts, 0),
   IntervalLength = proplists:get_value(interval_length, Opts, 30),
+  AddSeconds = proplists:get_value(addwindow, Opts, 0) * IntervalLength,
   {MegaSecs, Secs, _} = os:timestamp(),
   trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
 
