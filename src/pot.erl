@@ -115,7 +115,7 @@ valid_totp(Token, Secret, Opts) ->
 
 
 time_interval(Opts) ->
-  AddSeconds = proplists:get_value(addseconds, Opts, 0)
+  AddSeconds = proplists:get_value(addseconds, Opts, 0),
   IntervalLength = proplists:get_value(interval_length, Opts, 30),
   {MegaSecs, Secs, _} = os:timestamp(),
   trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
