@@ -110,7 +110,7 @@ valid_totp(Token, Secret, Opts) ->
                 _ ->
                     Window = proplists:get_value(window, Opts, 0),
                     AddWindow = proplists:get_value(addwindow, Opts, 0),
-                    check_candidate(Token, Secret, IntervalsNo - Window - AddWindow, IntervalsNo + Window + AddWindow, Opts) end;
+                    check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) end;
         _ ->
             false end.
 
