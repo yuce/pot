@@ -122,6 +122,15 @@ is_valid = :pot.valid_hotp(token, secret, [{:last, last_used}])
 # Do something
 ```
 
+### Check some time based token on Android devices with 15 seconds ahead
+
+```elixir
+secret = "MFRGGZDFMZTWQ2LK"
+token = "123456"
+is_valid = :pot.valid_totp(token, secret, [window: 1, addseconds: 30])
+# Do something
+```
+
 ## Credits
 
 - Yuce Tekol
