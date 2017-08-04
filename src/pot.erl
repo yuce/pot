@@ -115,9 +115,10 @@ valid_totp(Token, Secret, Opts) ->
 
 
 time_interval(Opts) ->
+  AddSeconds = proplists:get_value(addseconds, Opts, 0)
   IntervalLength = proplists:get_value(interval_length, Opts, 30),
   {MegaSecs, Secs, _} = os:timestamp(),
-  trunc((MegaSecs * 1000000 + Secs) / IntervalLength).
+  trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
 
 check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
     case Current of
