@@ -115,7 +115,7 @@ valid_totp(Token, Secret, Opts) ->
         _ ->
             false end.
 
-
+-spec time_interval(proplist()).
 time_interval(Opts) ->
   IntervalLength = proplists:get_value(interval_length, Opts, 30),
   AddSeconds = proplists:get_value(addwindow, Opts, 0) * proplists:get_value(interval_length, Opts, 30),
