@@ -20,7 +20,7 @@ In order to learn more about one time password generation, see the following Wik
 
 ## News
 
-- **2017/08/03**
+- **2017/08/04**
   - Added options to support Android devices (Thanks to Pedro Vieira)
 - **2016/07/30**
   - Released version 0.9.5 with bug fixes (Thanks to Peter McLain)
