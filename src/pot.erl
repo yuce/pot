@@ -17,7 +17,6 @@
 
 -module(pot).
 
-
 -export([valid_token/1, valid_token/2]).
 -export([hotp/2, hotp/3]).
 -export([totp/1, totp/2]).
@@ -36,7 +35,6 @@
 valid_token(Token) ->
     valid_token(Token, []).
 
-
 -spec valid_token(token(), proplist()) -> boolean().
 valid_token(Token, Opts) when is_binary(Token) ->
     Length = proplists:get_value(token_length, Opts, 6),
@@ -46,11 +44,9 @@ valid_token(Token, Opts) when is_binary(Token) ->
         false ->
             false end.
 
-
 -spec hotp(secret(), pos_integer()) -> token().
 hotp(Secret, IntervalsNo) ->
     hotp(Secret, IntervalsNo, []).
-
 
 -spec hotp(secret(), pos_integer(), proplist()) -> token().
 hotp(Secret, IntervalsNo, Opts) ->
@@ -72,17 +68,14 @@ hotp(Secret, IntervalsNo, Opts) ->
 totp(Secret) ->
     totp(Secret, []).
 
-
 -spec totp(secret(), proplist()) -> token().
 totp(Secret, Opts) ->
     IntervalsNo = time_interval(Opts),
     hotp(Secret, IntervalsNo, Opts).
 
-
 -spec valid_hotp(token(), secret()) -> boolean().
 valid_hotp(Token, Secret) ->
     valid_hotp(Token, Secret, []).
-
 
 -spec valid_hotp(token(), secret(), proplist()) -> boolean().
 valid_hotp(Token, Secret, Opts) ->
@@ -95,11 +88,9 @@ valid_hotp(Token, Secret, Opts) ->
         _ ->
             false end.
 
-
 -spec valid_totp(token(), secret()) -> boolean().
 valid_totp(Token, Secret) ->
     valid_totp(Token, Secret, []).
-
 
 -spec valid_totp(token(), secret(), proplist()) -> boolean().
 valid_totp(Token, Secret, Opts) ->
@@ -112,9 +103,10 @@ valid_totp(Token, Secret, Opts) ->
                 _ ->
                     Window = proplists:get_value(window, Opts, 0),
                     case check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) of
-                        false -> false;
-                        _ -> true;
-                    end end
+                        false ->
+                            false;
+                        _ ->
+                            true end end;
         _ ->
             false end.
 
