@@ -17,6 +17,7 @@
 
 -module(pot).
 
+
 -export([valid_token/1, valid_token/2]).
 -export([hotp/2, hotp/3]).
 -export([totp/1, totp/2]).
