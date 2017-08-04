@@ -122,7 +122,8 @@ time_interval(Opts) ->
   {MegaSecs, Secs, _} = os:timestamp(),
   trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
 
-check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
+-spec valid_totp(token(), secret(), time(), time(), proplist()) -> boolean().
+check_candidate(Token, Secret, Current, Last, Opts) ->
     case Current of
         Last ->
             false;
