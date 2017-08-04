@@ -110,12 +110,10 @@ valid_totp(Token, Secret, Opts) ->
                     true;
                 _ ->
                     Window = proplists:get_value(window, Opts, 0),
-                    case check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) of
-                        false -> false
-                        _ -> true
-                    end end;
+                    check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) end;
         _ ->
             false end.
+
 
 -spec time_interval(proplist()) -> time().
 time_interval(Opts) ->
@@ -124,7 +122,7 @@ time_interval(Opts) ->
   {MegaSecs, Secs, _} = os:timestamp(),
   trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
 
-check_candidate(Token, Secret, Current, Last, Opts) ->
+check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
     case Current of
         Last ->
             false;
