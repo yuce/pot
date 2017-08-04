@@ -127,7 +127,7 @@ is_valid = :pot.valid_hotp(token, secret, [{:last, last_used}])
 ```elixir
 secret = "MFRGGZDFMZTWQ2LK"
 token = "123456"
-is_valid = :pot.valid_totp(token, secret, [window: 1, addseconds: 30])
+is_valid = :pot.valid_totp(token, secret, [window: 1, addwindow: 1])
 # Do something
 ```
 
