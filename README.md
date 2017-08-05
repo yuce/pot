@@ -20,6 +20,8 @@ In order to learn more about one time password generation, see the following Wik
 
 ## News
 
+- **2017/08/04**
+  - Added options to support Android devices (Thanks to Pedro Vieira)
 - **2016/07/30**
   - Released version 0.9.5 with bug fixes (Thanks to Peter McLain)
 - **2015/01/20**
@@ -80,7 +82,7 @@ Include POT in your `mix.exs` as a dependency:
 
 ```elixir
 defp deps do
-    [{:pot, "~>0.9.5"}]
+    [{:pot, "~>0.9.6"}]
 end
 ```
 
@@ -120,6 +122,23 @@ is_valid = :pot.valid_hotp(token, secret, [{:last, last_used}])
 # Do something
 ```
 
+### Create a time based token with 30 seconds ahead
+
+```elixir
+secret = "MFRGGZDFMZTWQ2LK"
+is_valid = :pot.totp(secret, [addwindow: 1])
+# Do something
+```
+
+### Check some time based token on Android devices with 15 seconds ahead
+
+```elixir
+secret = "MFRGGZDFMZTWQ2LK"
+token = "123456"
+is_valid = :pot.valid_totp(token, secret, [window: 1, addwindow: 1])
+# Do something
+```
+
 ## Credits
 
 - Yuce Tekol
@@ -129,7 +148,7 @@ is_valid = :pot.valid_hotp(token, secret, [{:last, last_used}])
 
 ## License
 
-Copyright (c) 2014-2016 Yüce Tekol
+Copyright (c) 2014-2017 Yüce Tekol
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 and associated documentation files (the "Software"), to deal in the Software without

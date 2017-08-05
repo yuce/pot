@@ -1,4 +1,4 @@
-%% Copyright (c) 2014-2016 Yüce Tekol
+%% Copyright (c) 2014-2017 Yüce Tekol
 %
 %% Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 %% and associated documentation files (the "Software"), to deal in the Software without
@@ -22,18 +22,18 @@
 -export([totp/1, totp/2]).
 -export([valid_hotp/2, valid_hotp/3]).
 -export([valid_totp/2, valid_totp/3]).
+-export([time_interval/1]).
 
 
 -type token() :: binary().
 -type secret() :: binary().
 -type proplistitem() :: {atom(), term()}.
 -type proplist() :: [proplistitem()] | [].
-
+-type time() :: integer().
 
 -spec valid_token(token()) -> boolean().
 valid_token(Token) ->
     valid_token(Token, []).
-
 
 -spec valid_token(token(), proplist()) -> boolean().
 valid_token(Token, Opts) when is_binary(Token) ->
@@ -44,11 +44,9 @@ valid_token(Token, Opts) when is_binary(Token) ->
         false ->
             false end.
 
-
 -spec hotp(secret(), pos_integer()) -> token().
 hotp(Secret, IntervalsNo) ->
     hotp(Secret, IntervalsNo, []).
-
 
 -spec hotp(secret(), pos_integer(), proplist()) -> token().
 hotp(Secret, IntervalsNo, Opts) ->
@@ -70,17 +68,14 @@ hotp(Secret, IntervalsNo, Opts) ->
 totp(Secret) ->
     totp(Secret, []).
 
-
 -spec totp(secret(), proplist()) -> token().
 totp(Secret, Opts) ->
     IntervalsNo = time_interval(Opts),
     hotp(Secret, IntervalsNo, Opts).
 
-
 -spec valid_hotp(token(), secret()) -> boolean().
 valid_hotp(Token, Secret) ->
     valid_hotp(Token, Secret, []).
-
 
 -spec valid_hotp(token(), secret(), proplist()) -> boolean().
 valid_hotp(Token, Secret, Opts) ->
@@ -93,11 +88,9 @@ valid_hotp(Token, Secret, Opts) ->
         _ ->
             false end.
 
-
 -spec valid_totp(token(), secret()) -> boolean().
 valid_totp(Token, Secret) ->
     valid_totp(Token, Secret, []).
-
 
 -spec valid_totp(token(), secret(), proplist()) -> boolean().
 valid_totp(Token, Secret, Opts) ->
@@ -109,15 +102,21 @@ valid_totp(Token, Secret, Opts) ->
                     true;
                 _ ->
                     Window = proplists:get_value(window, Opts, 0),
-                    check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) end;
+                    case check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) of
+                        false ->
+                            false;
+                        _ ->
+                            true end end;
         _ ->
             false end.
 
 
+-spec time_interval(proplist()) -> time().
 time_interval(Opts) ->
   IntervalLength = proplists:get_value(interval_length, Opts, 30),
+  AddSeconds = proplists:get_value(addwindow, Opts, 0) * proplists:get_value(interval_length, Opts, 30),
   {MegaSecs, Secs, _} = os:timestamp(),
-  trunc((MegaSecs * 1000000 + Secs) / IntervalLength).
+  trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
 
 check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
     case Current of
