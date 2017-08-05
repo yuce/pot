@@ -1,11 +1,8 @@
-REBAR = rebar
+REBAR = rebar3
 
-.PHONY: all deps compile clean test dialyze
+.PHONY: all compile clean test dialyze
 
 all: deps compile
-
-deps:
-	$(REBAR) get-deps
 
 compile:
 	$(REBAR) compile
@@ -15,7 +12,7 @@ clean:
 	rm -f erl_crash.dump
 
 test:
-	$(REBAR) skip_deps=true eunit
+	$(REBAR) eunit
 
 dialyze:
 	dialyzer -r src deps/base32/src --src

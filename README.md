@@ -76,6 +76,23 @@ IsValid = pot:valid_hotp(Token, Secret, [{last, LastUsed}]),
 % Do something
 ```
 
+### Create a time based token with 30 seconds ahead
+
+```erlang
+Secret = <<"MFRGGZDFMZTWQ2LK">>,
+Token = pot:totp(Secret, [{addWindow, 1}]),
+% Do something
+```
+
+### Check some time based token on Android devices with 15 seconds ahead
+
+```erlang
+Secret = <<"MFRGGZDFMZTWQ2LK">>,
+Token = <<"123456">>,
+IsValid = pot:valid_totp(Token, Secret, [{window, 1}, {addWindow, 1}]),
+% Do something
+```
+
 ## Usage (Elixir)
 
 Include POT in your `mix.exs` as a dependency:
@@ -126,7 +143,7 @@ is_valid = :pot.valid_hotp(token, secret, [{:last, last_used}])
 
 ```elixir
 secret = "MFRGGZDFMZTWQ2LK"
-is_valid = :pot.totp(secret, [addwindow: 1])
+token = :pot.totp(secret, [addwindow: 1])
 # Do something
 ```
 
