@@ -93,6 +93,17 @@ IsValid = pot:valid_totp(Token, Secret, [{window, 1}, {addWindow, 1}]),
 % Do something
 ```
 
+### Create a time based token for given time
+
+Time format is `{MegaSecs, Secs, MicroSecs}` received by os:timestamp()
+
+```erlang
+Secret = <<"MFRGGZDFMZTWQ2LK">>,
+Token = pot:totp(Secret, [{timestamp, {1518, 179058, 919315}}]),
+% Token will be <<"151469">>
+```
+
+
 ## Usage (Elixir)
 
 Include POT in your `mix.exs` as a dependency:
@@ -154,6 +165,16 @@ secret = "MFRGGZDFMZTWQ2LK"
 token = "123456"
 is_valid = :pot.valid_totp(token, secret, [window: 1, addwindow: 1])
 # Do something
+```
+
+### Create a time based token for given time
+
+Time format is `{MegaSecs, Secs, MicroSecs}` received by :os.timestamp()
+
+```elixir
+secret = "MFRGGZDFMZTWQ2LK"
+token = :pot.totp(secret, [timestamp: {1518, 179058, 919315}])
+# Token will be <<"151469">>
 ```
 
 ## Credits
