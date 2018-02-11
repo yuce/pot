@@ -20,6 +20,8 @@ In order to learn more about one time password generation, see the following Wik
 
 ## News
 
+- **2018/02/12**
+  - `pot:totp/2`supports setting the timestamp (Thanks to Julius Beckmann)
 - **2017/08/04**
   - Added options to support Android devices (Thanks to Pedro Vieira)
 - **2016/07/30**
