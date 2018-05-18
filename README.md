@@ -1,3 +1,5 @@
+<a href="https://travis-ci.org/yuce/pot"><img src="https://api.travis-ci.org/yuce/pot.svg?branch=master"></a>
+
 # POT
 
 ## Introduction
