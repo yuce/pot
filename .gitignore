@@ -1,4 +1,5 @@
 .eunit
 .rebar
 ebin
-build_
+_build
+*.crashdump
