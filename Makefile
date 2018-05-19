@@ -1,6 +1,6 @@
 REBAR = rebar3
 
-.PHONY: all compil0e clean cover test dialyze
+.PHONY: all compile clean cover test dialyze
 
 all: deps compile
 
