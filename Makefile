@@ -1,6 +1,6 @@
 REBAR = rebar3
 
-.PHONY: all compile clean test dialyze
+.PHONY: all compile clean cover test dialyze
 
 all: deps compile
 
@@ -11,8 +11,11 @@ clean:
 	$(REBAR) clean
 	rm -f erl_crash.dump
 
+cover:
+	$(REBAR) cover --verbose
+
 test:
 	$(REBAR) eunit
 
 dialyze:
-	dialyzer -r src deps/base32/src --src
+	$(REBAR) dialyzer
