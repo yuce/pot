@@ -5,4 +5,4 @@ otp_release:
   - 18.3
   - 17.5
 script:
-  - rebar3 skip_deps=true eunit ct send-coveralls
+  - make coveralls
