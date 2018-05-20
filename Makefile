@@ -1,6 +1,6 @@
 REBAR = rebar3
 
-.PHONY: all compile clean cover test dialyze
+.PHONY: all compile clean cover coveralls test dialyze
 
 all: deps compile
 
@@ -11,8 +11,11 @@ clean:
 	$(REBAR) clean
 	rm -f erl_crash.dump
 
-cover:
+cover: test
 	$(REBAR) cover --verbose
+
+coveralls: compile cover
+	$(REBAR) coveralls send
 
 test:
 	$(REBAR) eunit

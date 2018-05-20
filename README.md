@@ -1,4 +1,6 @@
 <a href="https://travis-ci.org/yuce/pot"><img src="https://api.travis-ci.org/yuce/pot.svg?branch=master"></a>
+<a href="https://coveralls.io/github/yuce/pot"><img src="https://coveralls.io/repos/github/yuce/pot/badge.svg?branch=master"></a>
+
 
 # POT
 
