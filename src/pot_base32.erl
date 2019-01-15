@@ -17,7 +17,7 @@
 %% under the License.
 %%
 %% -------------------------------------------------------------------
--module(base32).
+-module(pot_base32).
 -export([encode/1, encode/2, decode/1, decode/2]).
 
 -ifdef(TEST).
