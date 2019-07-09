@@ -44,7 +44,7 @@ stop(_) ->
 
 checking_hotp_validity_without_range(_) ->
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
-    [?_assertEqual(pot:valid_hotp(pot:hotp(Secret, 123), Secret), 123)].
+    [?_assertEqual(pot:valid_hotp(pot:hotp(Secret, 123), Secret), true)].
 
 
 validating_correct_hotp_after_exhaustion(_) ->
@@ -62,7 +62,7 @@ retrieving_proper_interval_from_validator(_) ->
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     Totp = <<"713385">>,
     Result = pot:valid_hotp(Totp, Secret, [{last, 1}, {trials, 5}]),
-    [?_assertEqual(Result, 4),
+    [?_assertEqual(Result, true),
      ?_assertEqual(pot:hotp(Secret, 4), Totp)].
 
 

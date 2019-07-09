@@ -84,7 +84,12 @@ valid_hotp(Token, Secret, Opts) ->
     TokenLength = proplists:get_value(token_length, Opts, 6),
     case valid_token(Token, [{token_length, TokenLength}]) of
         true ->
-            check_candidate(Token, Secret, Last + 1, Last + Trials, Opts);
+            case check_candidate(Token, Secret, Last + 1, Last + Trials, Opts) of
+                false ->
+                    false;
+                _ ->
+                    true
+            end;
         _ ->
             false end.
 
