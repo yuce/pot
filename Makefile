@@ -1,6 +1,6 @@
 REBAR = rebar3
 
-.PHONY: all compile clean cover coveralls test dialyze
+.PHONY: all compile clean cover coveralls release test dialyze
 
 all: deps compile
 
@@ -16,6 +16,9 @@ cover: test
 
 coveralls: compile cover
 	$(REBAR) coveralls send
+
+release:
+	rebar3 hex publish
 
 test:
 	$(REBAR) eunit
