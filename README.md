@@ -24,15 +24,29 @@ In order to learn more about one time password generation, see the following Wik
 
 ## News
 
-- **2018/02/12**
-  - `pot:totp/2`supports setting the timestamp (Thanks to Julius Beckmann)
-- **2017/08/04**
+### 2019-07-09
+
+- Released version 0.9.8 with the following bug fix:
+  * [Return boolean on pot:valid_hotp/2 and pot:valid_hotp/3](https://github.com/yuce/pot/pull/15) (Thanks to Zbigniew Pekala)
+
+### 2018-02-12
+
+  - `pot:totp/2` supports setting the timestamp (Thanks to Julius Beckmann)
+
+### 2017-08-04
+
   - Added options to support Android devices (Thanks to Pedro Vieira)
-- **2016/07/30**
+
+### 2016-07-30
+
   - Released version 0.9.5 with bug fixes (Thanks to Peter McLain)
-- **2015/01/20**
+
+### 2015-01-20
+
   - Embedded base32_erlang library
-- **2015/01/18**
+
+### 2015-01-18
+
   - Initial version
 
 
@@ -189,10 +203,11 @@ token = :pot.totp(secret, [timestamp: {1518, 179058, 919315}])
 - Tomasz Jaskowski: [OneTimePass](https://github.com/tadeck/onetimepass) Python library
 - Andrew Tunnell-Jones: [base32_erlang](https://github.com/aetrion/base32_erlang) library
 
+Thanks for the [contributors](CONTRIBUTORS).
 
 ## License
 
-Copyright (c) 2014-2017 Yüce Tekol
+Copyright (c) 2014-2019 Yüce Tekol
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 and associated documentation files (the "Software"), to deal in the Software without

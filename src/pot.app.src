@@ -17,7 +17,7 @@
 
 {application, pot,
  [{description, "POT is an Erlang library for generating Google Authenticator compatible one time passwords."},
-  {vsn, "0.9.7"},
+  {vsn, "0.9.8"},
   {registered, []},
   {applications,
    [kernel,
