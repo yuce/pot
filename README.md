@@ -24,10 +24,18 @@ In order to learn more about one time password generation, see the following Wik
 
 ## News
 
+### 2019-08-03
+
+- Released version 0.10.1 with the following change:
+
+    * [Added pot prefix to base32 module avoid name collision](https://github.com/yuce/pot/pull/16) (Thanks to Girish Ramnani). This is a breaking change, `base32` module was renamed to `pot_base32`.
+
+
 ### 2019-07-09
 
 - Released version 0.9.8 with the following bug fix:
-  * [Return boolean on pot:valid_hotp/2 and pot:valid_hotp/3](https://github.com/yuce/pot/pull/15) (Thanks to Zbigniew Pekala)
+
+    * [Return boolean on pot:valid_hotp/2 and pot:valid_hotp/3](https://github.com/yuce/pot/pull/15) (Thanks to Zbigniew Pekala)
 
 ### 2018-02-12
 
@@ -130,7 +138,7 @@ Include POT in your `mix.exs` as a dependency:
 
 ```elixir
 defp deps do
-    [{:pot, "~>0.9.6"}]
+    [{:pot, "~>0.10.1"}]
 end
 ```
 
@@ -203,7 +211,7 @@ token = :pot.totp(secret, [timestamp: {1518, 179058, 919315}])
 - Tomasz Jaskowski: [OneTimePass](https://github.com/tadeck/onetimepass) Python library
 - Andrew Tunnell-Jones: [base32_erlang](https://github.com/aetrion/base32_erlang) library
 
-Thanks for the [contributors](CONTRIBUTORS).
+Thanks to [contributors](CONTRIBUTORS).
 
 ## License
 
