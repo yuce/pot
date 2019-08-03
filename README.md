@@ -211,7 +211,7 @@ token = :pot.totp(secret, [timestamp: {1518, 179058, 919315}])
 - Tomasz Jaskowski: [OneTimePass](https://github.com/tadeck/onetimepass) Python library
 - Andrew Tunnell-Jones: [base32_erlang](https://github.com/aetrion/base32_erlang) library
 
-Thanks for the [contributors](CONTRIBUTORS).
+Thanks to [contributors](CONTRIBUTORS).
 
 ## License
 
