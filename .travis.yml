@@ -4,6 +4,5 @@ otp_release:
   - 21.3
   - 20.3
   - 19.3
-  - 18.3
 script:
   - make coveralls
