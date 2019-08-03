@@ -53,7 +53,7 @@ hotp(Secret, IntervalsNo, Opts) ->
     DigestMethod = proplists:get_value(digest_method, Opts, sha),
     TokenLength = proplists:get_value(token_length, Opts, 6),
     IsLower = {lower, proplists:get_bool(casefold, Opts)},
-    Key = base32:decode(Secret, [{lower, IsLower}]),
+    Key = pot_base32:decode(Secret, [{lower, IsLower}]),
     Msg = <<IntervalsNo:8/big-unsigned-integer-unit:8>>,
     Digest = crypto:hmac(DigestMethod, Key, Msg),
     <<_:19/binary, Ob:8>> = Digest,
