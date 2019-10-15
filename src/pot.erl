@@ -111,10 +111,12 @@ valid_totp(Token, Secret, Opts) ->
                         false ->
                             false;
                         _ ->
-                            true end end;
+                            true
+                    end
+            end;
         _ ->
-            false end.
-
+            false
+    end.
 
 -spec time_interval(proplist()) -> time().
 time_interval(Opts) ->
@@ -123,17 +125,16 @@ time_interval(Opts) ->
   {MegaSecs, Secs, _} = proplists:get_value(timestamp, Opts, os:timestamp()),
   trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
 
+-spec check_candidate(token(), secret(), time(), time(), proplist()) -> time() | false.
 check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
-    case Current of
-        Last ->
-            false;
+    case hotp(Secret, Current, Opts) of
+        Token ->
+            Current;
         _ ->
-            Candidate = hotp(Secret, Current, Opts),
-            case Candidate of
-                Token ->
-                    Current;
-                _ ->
-                    check_candidate(Token, Secret, Current + 1, Last, Opts) end end.
+            check_candidate(Token, Secret, Current + 1, Last, Opts)
+    end;
+check_candidate(_Token, _Secret, _Current, _Last, _Opts) ->
+    false.
 
 -spec prepend_zeros(token(), non_neg_integer()) -> token().
 prepend_zeros(Token, N) ->

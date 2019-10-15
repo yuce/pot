@@ -23,16 +23,13 @@ stop(_) ->
 
 generating_current_totp_and_validating(_) ->
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
-    IntervalsNo = trunc(time_now() / 30),
+    IntervalOpts = [{timestamp, os:timestamp()}],
+    IntervalsNo = pot:time_interval(IntervalOpts),
     Hotp = pot:hotp(Secret, IntervalsNo),
-    Totp = pot:totp(Secret),
+    Totp = pot:totp(Secret, IntervalOpts),
     [?_assertEqual(Hotp, Totp)].
 
 generating_totp_for_given_timestamp_and_compare(_) ->
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     Totp = pot:totp(Secret, [{timestamp, {1518, 179058, 919315}}]),
     [?_assertEqual(Totp, <<"151469">>)].
-
-time_now() ->
-    {MegaSecs, Secs, _} = os:timestamp(),
-    MegaSecs * 1000000 + Secs.
