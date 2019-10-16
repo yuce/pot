@@ -1,5 +1,6 @@
-<a href="https://travis-ci.org/yuce/pot"><img src="https://api.travis-ci.org/yuce/pot.svg?branch=master"></a>
-<a href="https://coveralls.io/github/yuce/pot"><img src="https://coveralls.io/repos/github/yuce/pot/badge.svg?branch=master"></a>
+[![coveralls.io](https://api.travis-ci.org/yuce/pot.svg?branch=master)](https://travis-ci.org/yuce/pot)
+[![coveralls.io](https://coveralls.io/repos/github/yuce/pot/badge.svg?branch=master)](https://coveralls.io/github/yuce/pot)
+[![hex.pm](http://img.shields.io/hexpm/v/pot.svg?style=flat)](https://hex.pm/packages/pot)
 
 
 # POT
