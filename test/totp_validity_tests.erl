@@ -9,7 +9,7 @@ totp_validity_test_() ->
      fun stop/1,
      [fun validating_totp_for_same_secret/1,
       fun validating_invalid_totp_for_same_secret/1,
-      fun validatinging_invalid_token_hotp/1,
+      fun validating_invalid_token_hotp/1,
       fun validating_correct_hotp_as_totp/1,
       fun validating_past_future_totp_too_small_window/1,
       fun validating_past_future_totp_with_window/1]}.
@@ -31,7 +31,7 @@ validating_invalid_totp_for_same_secret(Secret) ->
     [?_assertNot(pot:valid_totp(<<"123456">>, Secret))].
 
 
-validatinging_invalid_token_hotp(Secret) ->
+validating_invalid_token_hotp(Secret) ->
      [?_assertNot(pot:valid_totp(<<"abcdef">>, Secret))].
 
 
