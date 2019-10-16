@@ -24,12 +24,17 @@ In order to learn more about one time password generation, see the following Wik
 
 ## News
 
+### 2019-10-16
+
+- Released version 0.10.2 with the following change:
+
+    * [Fix valid_totp to support upper bound on check_candidate](https://github.com/yuce/pot/pull/20) (Thanks to Nicholas Lundgaard)
+
 ### 2019-08-03
 
 - Released version 0.10.1 with the following change:
 
     * [Added pot prefix to base32 module avoid name collision](https://github.com/yuce/pot/pull/16) (Thanks to Girish Ramnani). This is a breaking change, `base32` module was renamed to `pot_base32`.
-
 
 ### 2019-07-09
 
