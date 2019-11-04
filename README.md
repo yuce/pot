@@ -5,25 +5,30 @@
 
 # POT
 
+- [Introduction](#introduction)
+- [Version History](#version-history)
+- [Usage](#usage)
+- [Function Reference](#function-ref)
+- [Examples (Erlang)](#examples-erlang)
+- [Examples (Elixir)](#examples-elixir)
+- [Credits](#credits)
+- [Licence](#license)
+
 ## Introduction
 
-POT is an Erlang library for generating one time passwords. It supports both HMAC-based one time passwords (HOTP) and time based ones (TOTP). The generated passwords are compatible with [Google Authenticator](http://en.wikipedia.org/wiki/Google_Authenticator).
+POT is an Erlang library for generating one time passwords. It supports both HMAC-based one time passwords (HOTP) and time based ones (TOTP). The generated passwords are based on [RFC 4226][rfc4226] and [RFC 6238][rfc6238], compatible with [Google Authenticator][google_auth_wiki].
 
-POT is an almost direct translation of the Python [OneTimePass](https://github.com/tadeck/onetimepass) library.
+POT is an almost direct translation of the Python [OneTimePass][onetimepass] library.
 
-POT should work with any recent version of [Erlang/OTP](http://www.erlang.org/), [Elixir](http://elixir-lang.org/) and other Erlang VM based languages.
+POT should work with any recent version of [Erlang/OTP][erlang], [Elixir][elixir], and other Erlang VM based languages.
 
 In order to learn more about one time password generation, see the following Wikipedia articles:
 
-- [Google Authenticator](http://en.wikipedia.org/wiki/Google_Authenticator)
-- [HMAC-based One-time Password Algorithm](http://en.wikipedia.org/wiki/HMAC-based_One-time_Password_Algorithm)
-- [Time-based One-time Password Algorithm](http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm)
+- [Google Authenticator][google_auth_wiki]
+- [HMAC-based One-time Password Algorithm][hotp_wiki] ([RFC 4226][rfc4226])
+- [Time-based One-time Password Algorithm][totp_wiki] ([RFC 6238][rfc6238])
 
-### TODO
-
-- Documentation.
-
-## News
+## Version History
 
 ### 2019-10-16
 
@@ -62,15 +67,197 @@ In order to learn more about one time password generation, see the following Wik
 ### 2015-01-18
 
   - Initial version
+  
+## Usage
 
+See the sections below on using `pot` in your Erlang and Elixir project.
 
-## Usage (Erlang)
+### Erlang
 
-We recommend using [rebar3](https://github.com/erlang/rebar3) for managing dependencies and building the library. POT is available on hex.pm, so you can just include the following in your `rebar.config`:
+We recommend using [rebar3][rebar3] for managing dependencies and building the library. POT is available on hex.pm, so you can just include the following in your `rebar.config`:
 
 ```
 {deps, [pot]}.
 ```
+
+See the [Erlang examples](#examples-erlang)
+
+### Elixir
+
+Include POT in your `mix.exs` as a dependency:
+
+```elixir
+defp deps do
+    [{:pot, "~>0.10.1"}]
+end
+```
+
+## <a id="function-ref"></a>Function Reference
+
+The functions below refer to the following common parameters:
+
+| Parameter  | Type     |
+|------------|----------|
+| `Interval` | integer  |
+| `Secret`   | string\* |
+| `Token`    | string\* |
+
+- `Interval` is an integer that represents the counter value, the "moving factor" referenced in [RFC 4226][rfc4226]. It is an 8 byte unsigned integer; if a negative and/or too large integer is passed, it will be 2's complemented and truncated appropriately.
+- `Secret` is a base-32-encoded secret key. Generally, it should be at least 128 bits, preferably 160 bits. 
+- `Token` is a HOTP/TOTP value represented as a string\*. This is generally a 6-digit number, e.g., "123456", but its length may be modulated with the `token_length` option.
+
+\*Note: for [Erlang][erlang] uses of `pot`, all strings should be in `binary()` format.
+
+### Token Generation Functions
+
+#### `hotp/2,3`
+
+Generate an [RFC 4226][rfc4226] compatible HOTP token. 
+
+Erlang:
+
+```
+pot:hotp(Secret, Interval) -> Token
+pot:hotp(Secret, Interval, Options) -> Token
+```
+
+Elixir:
+
+```
+:pot.hotp(Secret, Interval) -> Token
+:pot.hotp(Secret, Interval, Options) -> Token
+```
+
+The following `Options` are allowed:
+
+| Option          | Type        | Default |
+|-----------------|-------------|---------|
+| `digest_method` | atom        | sha     |
+| `token_length`  | integer > 0 | 6       |
+
+- `digest_method` controls the signing algorithm passed to the [Erlang][erlang] `crypto` module's [`hmac`][crypto_hmac] function. For [RFC 4226][rfc4226] compliant tokens, it must be set to `sha`. For [RFC 6238][rfc6238] compliant tokens, additional values such as `sha256` or `sha512` may be used.
+- `token_length` controls the number of digits in output `Token`.
+
+#### `totp/1,2`
+
+Generate an [RFC 6238][rfc6238] compatible TOTP token. 
+
+Erlang:
+
+```
+pot:totp(Secret) -> Token
+pot:totp(Secret, Options) -> Token
+```
+
+Elixir:
+
+```
+:pot.totp(Secret) -> Token
+:pot.totp(Secret, Options) -> Token
+```
+
+The following `Options` are allowed:
+
+| Option            | Type        | Default/Reference        |
+|-------------------|-------------|--------------------------|
+| `addwindow`       | integer     | 0                        |
+| `digest_method`   | atom        | from [hotp/2,3](#hotp23) |
+| `interval_length` | integer > 0 | 30                       |
+| `timestamp`       | timestamp   | [`os:timestamp()`][ts]   |
+| `token_length`    | integer > 0 | from [hotp/2,3](#hotp23) |
+
+- `addwindow` acts as an offset to the `Interval` extrapolated from dividing the `timestamp` by the `interval_length` per the algorithm described in [RFC 6238][rfc6238].
+- `interval_length` controls the number of seconds for the `Interval` computation.
+- `timestamp` may be passed to specify a custom timestamp (in Erlang [timestamp][ts] format) to use for computing the `Interval` used to generate a `Token`.
+
+### Token Validation Functions
+
+#### `valid_token/1,2`
+
+Validate that a given `Token` has the correct format (correct length, all digits).
+
+Erlang:
+
+```
+pot:valid_token(Token) -> Boolean
+pot:valid_token(Token, Options) -> Boolean
+```
+
+Elixir:
+
+```
+:pot.valid_token(Token) -> Boolean
+:pot.valid_token(Token, Options) -> Boolean
+```
+
+The following `Options` are allowed:
+
+| Option            | Type        | Default/Reference        |
+|-------------------|-------------|--------------------------|
+| `token_length`    | integer > 0 | from [hotp/2,3](#hotp23) |
+
+#### `valid_hotp/2,3`
+
+Validate an [RFC 4226][rfc4226] compatible HOTP token. Returns `true` if the `Token` is valid. 
+
+Erlang:
+
+```
+pot:valid_hotp(Token, Secret) -> Boolean
+pot:valid_hotp(Token, Secret, Options) -> Boolean
+```
+
+Elixir:
+
+```
+:pot.valid_hotp(Token, Secret) -> Boolean
+:pot.valid_hotp(Token, Secret, Options) -> Boolean
+```
+
+The following `Options` are allowed:
+
+| Option            | Type        | Default/Reference        |
+|-------------------|-------------|--------------------------|
+| `digest_method`   | atom        | from [hotp/2,3](#hotp23) |
+| `last`            | integer     | 1                        |
+| `token_length`    | integer > 0 | from [hotp/2,3](#hotp23) |
+| `trials`          | integer > 0 | 1000                     |
+
+- `last` is the `Interval` value of the previous valid `Token`; the next `Interval` after `last` is used as the first candidate for validating the `Token`.
+- `trials` controls the number of incremental `Interval` values after `last` to try when validating the `Token`. If a matching candidate is not found within `trials` attempts, the `Token` is considered invalid.
+
+#### `valid_totp/2,3`
+
+Validate an [RFC 6238][rfc6238] compatible TOTP token. Returns `true` if the `Token` is valid.
+
+Erlang:
+
+```
+pot:valid_totp(Token, Secret) -> Boolean
+pot:valid_totp(Token, Secret, Options) -> Boolean
+```
+
+Elixir:
+
+```
+:pot.valid_totp(Token, Secret) -> Boolean
+:pot.valid_totp(Token, Secret, Options) -> Boolean
+```
+
+The following `Options` are allowed:
+
+| Option            | Type        | Default/Reference        |
+|-------------------|-------------|--------------------------|
+| `addwindow`       | integer     | from [totp/1,2](#totp12) |
+| `digest_method`   | atom        | from [hotp/2,3](#hotp23) |
+| `interval_length` | integer > 0 | from [totp/1,2](#totp12) |
+| `timestamp`       | timestamp   | from [totp/1,2](#totp12) |
+| `token_length`    | integer > 0 | from [hotp/2,3](#hotp23) |
+| `window`          | integer > 0 | 0                        |
+
+- `window` is a range used for expanding `Interval` value derived from the `timestamp`. This is done by considering the `window` `Interval`s before *and* after the one derived from the `timestamp`. This allows validation to be relaxed to allow for successful validation of TOTP `Token`s generated by clients with some degree of unknown clock drift from the server, as well as some client entry delay. 
+
+## Examples (Erlang)
 
 POT works with binary tokens and secrets.
 
@@ -114,16 +301,16 @@ IsValid = pot:valid_hotp(Token, Secret, [{last, LastUsed}]),
 
 ```erlang
 Secret = <<"MFRGGZDFMZTWQ2LK">>,
-Token = pot:totp(Secret, [{addWindow, 1}]),
+Token = pot:totp(Secret, [{addwindow, 1}]),
 % Do something
 ```
 
-### Check some time based token on Android devices with 15 seconds ahead
+### Check a time based token from a mobile device with 30 seconds ahead and a ±1 interval tolerance
 
 ```erlang
 Secret = <<"MFRGGZDFMZTWQ2LK">>,
 Token = <<"123456">>,
-IsValid = pot:valid_totp(Token, Secret, [{window, 1}, {addWindow, 1}]),
+IsValid = pot:valid_totp(Token, Secret, [{window, 1}, {addwindow, 1}]),
 % Do something
 ```
 
@@ -137,16 +324,7 @@ Token = pot:totp(Secret, [{timestamp, {1518, 179058, 919315}}]),
 % Token will be <<"151469">>
 ```
 
-
-## Usage (Elixir)
-
-Include POT in your `mix.exs` as a dependency:
-
-```elixir
-defp deps do
-    [{:pot, "~>0.10.1"}]
-end
-```
+## Examples (Elixir)
 
 ### Create a time based token
 
@@ -192,7 +370,7 @@ token = :pot.totp(secret, [addwindow: 1])
 # Do something
 ```
 
-### Check some time based token on Android devices with 15 seconds ahead
+### Check a time based token from a mobile device with 30 seconds ahead and a ±1 interval tolerance
 
 ```elixir
 secret = "MFRGGZDFMZTWQ2LK"
@@ -237,3 +415,15 @@ BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR P
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+[onetimepass]: https://github.com/tadeck/onetimepass
+[erlang]: http://www.erlang.org
+[elixir]: http://elixir-lang.org
+[rfc4226]: https://tools.ietf.org/html/rfc4226
+[rfc6238]: https://tools.ietf.org/html/rfc6238
+[rebar3]: https://github.com/erlang/rebar3
+[google_auth_wiki]: http://en.wikipedia.org/wiki/Google_Authenticator
+[hotp_wiki]: http://en.wikipedia.org/wiki/HMAC-based_One-time_Password_Algorithm
+[totp_wiki]: http://en.wikipedia.org/wiki/Time-based_One-time_Password_Algorithm
+[crypto_hmac]: http://erlang.org/doc/man/crypto.html#hmac-3
+[ts]: http://erlang.org/doc/man/os.html#timestamp-0

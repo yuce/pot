@@ -11,6 +11,7 @@ checking_hotp_validity_without_range_test_() ->
      [fun checking_hotp_validity_without_range/1,
       fun checking_hotp_validity_max_default_range/1,
       fun checking_hotp_validity_past_max_default_range/1,
+      fun validating_invalid_token_hotp/1,
       fun validating_correct_hotp_after_exhaustion/1,
       fun validating_correct_totp_as_hotp/1,
       fun retrieving_proper_interval_from_validator/1,
@@ -38,6 +39,10 @@ checking_hotp_validity_max_default_range(Secret) ->
 checking_hotp_validity_past_max_default_range(Secret) ->
     [{"hotp beyond the max # of trials (1000) past the start (1) is invalid",
       ?_assertNot(pot:valid_hotp(pot:hotp(Secret, 1002), Secret))}].
+
+
+validating_invalid_token_hotp(Secret) ->
+     [?_assertNot(pot:valid_hotp(<<"abcdef">>, Secret))].
 
 
 validating_correct_hotp_after_exhaustion(Secret) ->

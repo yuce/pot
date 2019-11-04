@@ -17,43 +17,75 @@
 
 -module(pot).
 
--export([valid_token/1, valid_token/2]).
+% API
 -export([hotp/2, hotp/3]).
 -export([totp/1, totp/2]).
+
+-export([valid_token/1, valid_token/2]).
 -export([valid_hotp/2, valid_hotp/3]).
 -export([valid_totp/2, valid_totp/3]).
+
+% Internal API
 -export([time_interval/1]).
 
+% Types
+-export_type([token/0, secret/0, interval/0]).
 
--type token() :: binary().
+-export_type([valid_token_options/0,
+              hotp_options/0,
+              totp_options/0,
+              valid_hotp_options/0,
+              valid_totp_options/0,
+              time_interval_options/0]).
+
+%%==============================================================================
+%% Types
+%%==============================================================================
+
+-type interval() :: integer().
 -type secret() :: binary().
--type proplistitem() :: {atom(), term()}.
--type proplist() :: [proplistitem()] | [].
--type time() :: integer().
+-type token() :: binary().
 
--spec valid_token(token()) -> boolean().
-valid_token(Token) ->
-    valid_token(Token, []).
+-type token_option() :: {token_length, pos_integer()}.
 
--spec valid_token(token(), proplist()) -> boolean().
-valid_token(Token, Opts) when is_binary(Token) ->
-    Length = proplists:get_value(token_length, Opts, 6),
-    case byte_size(Token) == Length of
-        true ->
-            lists:all(fun(X) -> X >= $0 andalso X =< $9 end, binary_to_list(Token));
-        false ->
-            false end.
+-type time_interval_option() :: {addwindow, integer()} |
+                                {interval_length, pos_integer()} |
+                                {timestamp, erlang:timestamp()}.
 
--spec hotp(secret(), pos_integer()) -> token().
+-type hotp_option() :: token_option() |
+                       {digest_method, atom()}.
+
+-type totp_option() :: hotp_option() | time_interval_option().
+
+-type valid_hotp_option() :: hotp_option() |
+                             {last, interval()} |
+                             {trials, pos_integer()}.
+
+-type valid_totp_option() :: totp_option() |
+                             {window, non_neg_integer()}.
+
+-type hotp_options() :: [hotp_option()].
+-type totp_options() :: [totp_option()].
+
+-type valid_token_options() :: [token_option()].
+-type valid_hotp_options() :: [valid_hotp_option()].
+-type valid_totp_options() :: [valid_totp_option()].
+
+-type time_interval_options() :: [time_interval_option()].
+
+%%==============================================================================
+%% Token generation
+%%==============================================================================
+
+-spec hotp(secret(), interval()) -> token().
 hotp(Secret, IntervalsNo) ->
     hotp(Secret, IntervalsNo, []).
 
--spec hotp(secret(), pos_integer(), proplist()) -> token().
+-spec hotp(secret(), interval(), hotp_options()) -> token().
 hotp(Secret, IntervalsNo, Opts) ->
     DigestMethod = proplists:get_value(digest_method, Opts, sha),
     TokenLength = proplists:get_value(token_length, Opts, 6),
-    IsLower = {lower, proplists:get_bool(casefold, Opts)},
-    Key = pot_base32:decode(Secret, [{lower, IsLower}]),
+    Key = pot_base32:decode(Secret),
     Msg = <<IntervalsNo:8/big-unsigned-integer-unit:8>>,
     Digest = crypto:hmac(DigestMethod, Key, Msg),
     <<_:19/binary, Ob:8>> = Digest,
@@ -68,16 +100,34 @@ hotp(Secret, IntervalsNo, Opts) ->
 totp(Secret) ->
     totp(Secret, []).
 
--spec totp(secret(), proplist()) -> token().
+-spec totp(secret(), totp_options()) -> token().
 totp(Secret, Opts) ->
     IntervalsNo = time_interval(Opts),
     hotp(Secret, IntervalsNo, Opts).
+
+%%==============================================================================
+%% Token validation
+%%==============================================================================
+
+-spec valid_token(token()) -> boolean().
+valid_token(Token) ->
+    valid_token(Token, []).
+
+-spec valid_token(token(), valid_token_options()) -> boolean().
+valid_token(Token, Opts) when is_binary(Token) ->
+    Length = proplists:get_value(token_length, Opts, 6),
+    case byte_size(Token) == Length of
+        true ->
+            lists:all(fun(X) -> X >= $0 andalso X =< $9 end, binary_to_list(Token));
+        false ->
+            false
+    end.
 
 -spec valid_hotp(token(), secret()) -> boolean().
 valid_hotp(Token, Secret) ->
     valid_hotp(Token, Secret, []).
 
--spec valid_hotp(token(), secret(), proplist()) -> boolean().
+-spec valid_hotp(token(), secret(), valid_hotp_options()) -> boolean().
 valid_hotp(Token, Secret, Opts) ->
     Last = proplists:get_value(last, Opts, 1),
     Trials = proplists:get_value(trials, Opts, 1000),
@@ -91,13 +141,14 @@ valid_hotp(Token, Secret, Opts) ->
                     true
             end;
         _ ->
-            false end.
+            false
+    end.
 
 -spec valid_totp(token(), secret()) -> boolean().
 valid_totp(Token, Secret) ->
     valid_totp(Token, Secret, []).
 
--spec valid_totp(token(), secret(), proplist()) -> boolean().
+-spec valid_totp(token(), secret(), valid_totp_options()) -> boolean().
 valid_totp(Token, Secret, Opts) ->
     case valid_token(Token, Opts) of
         true ->
@@ -118,14 +169,19 @@ valid_totp(Token, Secret, Opts) ->
             false
     end.
 
--spec time_interval(proplist()) -> time().
+%%==============================================================================
+%% Internal functions
+%%==============================================================================
+
+-spec time_interval(time_interval_options()) -> interval().
 time_interval(Opts) ->
   IntervalLength = proplists:get_value(interval_length, Opts, 30),
   AddSeconds = proplists:get_value(addwindow, Opts, 0) * proplists:get_value(interval_length, Opts, 30),
   {MegaSecs, Secs, _} = proplists:get_value(timestamp, Opts, os:timestamp()),
   trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
 
--spec check_candidate(token(), secret(), time(), time(), proplist()) -> time() | false.
+-spec check_candidate(token(), secret(), interval(), interval(), hotp_options()) ->
+    interval() | false.
 check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
     case hotp(Secret, Current, Opts) of
         Token ->

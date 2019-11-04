@@ -2,7 +2,7 @@ REBAR = rebar3
 
 .PHONY: all compile clean cover coveralls release test dialyze
 
-all: deps compile
+all: compile
 
 compile:
 	$(REBAR) compile
