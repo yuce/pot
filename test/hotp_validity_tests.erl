@@ -9,6 +9,7 @@ checking_hotp_validity_without_range_test_() ->
      fun start/0,
      fun stop/1,
      [fun checking_hotp_validity_without_range/1,
+      fun checking_hotp_validity_without_range_return_interval/1,
       fun checking_hotp_validity_max_default_range/1,
       fun checking_hotp_validity_past_max_default_range/1,
       fun validating_invalid_token_hotp/1,
@@ -29,6 +30,11 @@ stop(_) ->
 
 checking_hotp_validity_without_range(Secret) ->
     [?_assert(pot:valid_hotp(pot:hotp(Secret, 123), Secret))].
+
+
+checking_hotp_validity_without_range_return_interval(Secret) ->
+    [?_assertEqual({true, 123},
+                   pot:valid_hotp(pot:hotp(Secret, 123), Secret, [return_interval]))].
 
 
 checking_hotp_validity_max_default_range(Secret) ->
@@ -54,20 +60,32 @@ validating_correct_totp_as_hotp(Secret) ->
 
 
 retrieving_proper_interval_from_validator(Secret) ->
-    Totp = <<"713385">>,
-    Result = pot:valid_hotp(Totp, Secret, [{last, 1}, {trials, 5}]),
-    [?_assert(Result),
-     ?_assertEqual(pot:hotp(Secret, 4), Totp)].
+    Hotp = <<"713385">>,
+    [?_assert(pot:valid_hotp(Hotp, Secret, [{last, 1}, {trials, 5}])),
+     ?_assert(pot:valid_hotp(Hotp, Secret, [{last, 1}, {trials, 5},
+                                            {return_interval, false}])),
+     ?_assertEqual({true, 4},
+                   pot:valid_hotp(Hotp, Secret, [{last, 1}, {trials, 5},
+                                                 {return_interval, true}])),
+     ?_assertEqual(pot:hotp(Secret, 4), Hotp)].
 
 
 hotp_for_range_exact_match(_) ->
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
-    Totp = <<"816065">>,
-    Result = pot:valid_hotp(Totp, Secret, [{last, 1}, {trials, 1}]),
-    [?_assert(Result),
-     ?_assertEqual(pot:hotp(Secret, 2), Totp)].
+    Hotp = <<"816065">>,
+    [?_assert(pot:valid_hotp(Hotp, Secret, [{last, 1}, {trials, 1}])),
+     ?_assert(pot:valid_hotp(Hotp, Secret, [{last, 1}, {trials, 1},
+                                            {return_interval, false}])),
+     ?_assertEqual({true, 2},
+                   pot:valid_hotp(Hotp, Secret, [{last, 1}, {trials, 1},
+                                                 {return_interval, true}])),
+     ?_assertEqual(pot:hotp(Secret, 2), Hotp)].
 
 
 hotp_for_range_preceding_match(_) ->
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
-    [?_assertNot(pot:valid_hotp(<<"713385">>, Secret, [{last, 1}, {trials, 2}]))].
+    Hotp = <<"713385">>,
+    [?_assertNot(pot:valid_hotp(Hotp, Secret, [{last, 1}, {trials, 2}])),
+     ?_assertNot(pot:valid_hotp(Hotp, Secret, [{last, 1}, {trials, 2},
+                                               {return_interval, true}])),
+     ?_assertEqual(pot:hotp(Secret, 4), Hotp)].

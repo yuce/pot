@@ -59,6 +59,7 @@
 
 -type valid_hotp_option() :: hotp_option() |
                              {last, interval()} |
+                             return_interval | {return_interval, boolean()} |
                              {trials, pos_integer()}.
 
 -type valid_totp_option() :: totp_option() |
@@ -72,6 +73,8 @@
 -type valid_totp_options() :: [valid_totp_option()].
 
 -type time_interval_options() :: [time_interval_option()].
+
+-type valid_hotp_return() :: boolean() | {true, LastInterval :: interval()}.
 
 %%==============================================================================
 %% Token generation
@@ -127,7 +130,7 @@ valid_token(Token, Opts) when is_binary(Token) ->
 valid_hotp(Token, Secret) ->
     valid_hotp(Token, Secret, []).
 
--spec valid_hotp(token(), secret(), valid_hotp_options()) -> boolean().
+-spec valid_hotp(token(), secret(), valid_hotp_options()) -> valid_hotp_return().
 valid_hotp(Token, Secret, Opts) ->
     Last = proplists:get_value(last, Opts, 1),
     Trials = proplists:get_value(trials, Opts, 1000),
@@ -137,8 +140,8 @@ valid_hotp(Token, Secret, Opts) ->
             case check_candidate(Token, Secret, Last + 1, Last + Trials, Opts) of
                 false ->
                     false;
-                _ ->
-                    true
+                LastInterval ->
+                    valid_hotp_return(LastInterval, proplists:get_value(return_interval, Opts, false))
             end;
         _ ->
             false
@@ -196,3 +199,9 @@ check_candidate(_Token, _Secret, _Current, _Last, _Opts) ->
 prepend_zeros(Token, N) ->
     Padding = << <<48:8>> || _ <- lists:seq(1, N) >>,
     <<Padding/binary, Token/binary>>.
+
+-spec valid_hotp_return(interval(), boolean()) -> valid_hotp_return().
+valid_hotp_return(LastInterval, true = _ReturnInterval) ->
+    {true, LastInterval};
+valid_hotp_return(_LastInterval, _ReturnInterval) ->
+    true.

@@ -204,14 +204,14 @@ Erlang:
 
 ```
 pot:valid_hotp(Token, Secret) -> Boolean
-pot:valid_hotp(Token, Secret, Options) -> Boolean
+pot:valid_hotp(Token, Secret, Options) -> Boolean | {true, interval()}
 ```
 
 Elixir:
 
 ```
 :pot.valid_hotp(Token, Secret) -> Boolean
-:pot.valid_hotp(Token, Secret, Options) -> Boolean
+:pot.valid_hotp(Token, Secret, Options) -> Boolean | {true, interval()}
 ```
 
 The following `Options` are allowed:
@@ -220,11 +220,13 @@ The following `Options` are allowed:
 |-------------------|-------------|--------------------------|
 | `digest_method`   | atom        | from [hotp/2,3](#hotp23) |
 | `last`            | integer     | 1                        |
+| `return_interval` | boolean     | false                     |
 | `token_length`    | integer > 0 | from [hotp/2,3](#hotp23) |
 | `trials`          | integer > 0 | 1000                     |
 
 - `last` is the `Interval` value of the previous valid `Token`; the next `Interval` after `last` is used as the first candidate for validating the `Token`.
 - `trials` controls the number of incremental `Interval` values after `last` to try when validating the `Token`. If a matching candidate is not found within `trials` attempts, the `Token` is considered invalid.
+- `return_interval` controls whether the matching `Interval` of a valid `Token` is returned with the result. if set to `true`, then `valid_hotp/2` will return `{true, Interval}` (e.g., `{true, 123}`) when a valid `Token` is provided.
 
 #### `valid_totp/2,3`
 
@@ -297,6 +299,20 @@ IsValid = pot:valid_hotp(Token, Secret, [{last, LastUsed}]),
 % Do something
 ```
 
+Alternatively, to get the last interval from a validated token:
+
+```erlang
+Secret = <<"MFRGGZDFMZTWQ2LK">>,
+Token = <<"123456">>,
+LastUsed = 5,  % last successful trial
+Options = [{last, LastUsed}, {return_interval, true}],
+NewLastUsed = case pot:valid_hotp(Token, Secret, Options) of
+                  {true, LastInterval} -> LastInterval;
+                  false -> LastUsed
+              end,
+% Do something
+```
+
 ### Create a time based token with 30 seconds ahead
 
 ```erlang
@@ -361,6 +377,22 @@ last_used = 5  # last successful trial
 is_valid = :pot.valid_hotp(token, secret, [{:last, last_used}])
 # Do something
 ```
+
+Alternatively, to get the last interval from a validated token:
+
+```elixir
+secret = "MFRGGZDFMZTWQ2LK"
+token = "123456"
+last_used = 5  # last successful trial
+options = [{:last, last_used}, {:return_token, true}]
+new_last_used =
+    case :pot.valid_hotp(token, secret, options) do
+        {true, last_interval} -> last_interval
+        false -> last_used
+    end
+# Do something
+```
+
 
 ### Create a time based token with 30 seconds ahead
 
