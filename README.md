@@ -30,6 +30,13 @@ In order to learn more about one time password generation, see the following Wik
 
 ## Version History
 
+### 2020-03-08
+
+- Released version 0.11.0 with the following changes:
+
+    * [Improved types, README documentation](https://github.com/yuce/pot/commit/fa4d4314465f7cb7d32526c4c495fcf4f7b0eaf5) (Thanks to Nicholas Lundgaard)
+    * [Add return_interval option to valid_hotp](https://github.com/yuce/pot/commit/62b8289afe9bc807dd055cec13a810594dc91e8a) (Thanks to Nicholas Lundgaard)
+
 ### 2019-10-16
 
 - Released version 0.10.2 with the following change:
