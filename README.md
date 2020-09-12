@@ -30,6 +30,12 @@ In order to learn more about one time password generation, see the following Wik
 
 ## Version History
 
+### 2020-09-03
+
+- Released version 0.11.1 with the following changes:
+
+    * [Move coveralls into project_plugins](https://github.com/yuce/pot/pull/26/commits/3483722db62915cde74aa9476324461c9240c8b7) (Thanks to Bryan Paxton)
+
 ### 2020-03-08
 
 - Released version 0.11.0 with the following changes:
