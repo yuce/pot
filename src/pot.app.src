@@ -17,7 +17,7 @@
 
 {application, pot,
  [{description, "POT is an Erlang library for generating Google Authenticator compatible one time passwords."},
-  {vsn, "0.11.1"},
+  {vsn, "1.0.0"},
   {registered, []},
   {applications,
    [kernel,
@@ -26,7 +26,10 @@
   {env,[]},
   {modules, []},
 
-  {maintainers, ["Yuce Tekol"]},
+  {maintainers, [
+      "Yuce Tekol",
+      "Nicholas Lundgaard"
+   ]},
   {licenses, ["MIT"]},
   {links, [{"Github", "https://github.com/yuce/pot"}]}
  ]}.
