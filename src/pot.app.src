@@ -25,11 +25,6 @@
    ]},
   {env,[]},
   {modules, []},
-
-  {maintainers, [
-      "Yuce Tekol",
-      "Nicholas Lundgaard"
-   ]},
   {licenses, ["MIT"]},
   {links, [{"Github", "https://github.com/yuce/pot"}]}
  ]}.
