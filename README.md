@@ -30,9 +30,9 @@ In order to learn more about one time password generation, see the following Wik
 
 ## Version History
 
-### 2020-09-03
+### 2020-09-15
 
-- Released version 0.11.1 with the following changes:
+- Released version 1.0.0 with the following changes:
 
     * [Move coveralls into project_plugins](https://github.com/yuce/pot/pull/26/commits/3483722db62915cde74aa9476324461c9240c8b7) (Thanks to Bryan Paxton)
 
@@ -436,15 +436,20 @@ token = :pot.totp(secret, [timestamp: {1518, 179058, 919315}])
 
 ## Credits
 
-- Yuce Tekol
+- Yüce Tekol
 - Tomasz Jaskowski: [OneTimePass](https://github.com/tadeck/onetimepass) Python library
 - Andrew Tunnell-Jones: [base32_erlang](https://github.com/aetrion/base32_erlang) library
 
 Thanks to [contributors](CONTRIBUTORS).
 
+### Maintainers
+
+- 2020 -  ... : Nicholas Lundgaard
+- 2014 - 2020 : Yüce Tekol
+
 ## License
 
-Copyright (c) 2014-2019 Yüce Tekol
+Copyright (c) 2014-2020 POT Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 and associated documentation files (the "Software"), to deal in the Software without
