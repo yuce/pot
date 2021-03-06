@@ -1,4 +1,4 @@
-[![coveralls.io](https://api.travis-ci.org/yuce/pot.svg?branch=master)](https://travis-ci.org/yuce/pot)
+[![Build Status](https://github.com/yuce/pot/workflows/build/badge.svg)](https://github.com/yuce/pot/actions?query=workflow:build)
 [![coveralls.io](https://coveralls.io/repos/github/yuce/pot/badge.svg?branch=master)](https://coveralls.io/github/yuce/pot)
 [![hex.pm](http://img.shields.io/hexpm/v/pot.svg?style=flat)](https://hex.pm/packages/pot)
 

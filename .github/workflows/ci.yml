@@ -1,0 +1,24 @@
+---
+name: "build"
+on:
+  push:
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
+jobs:
+  ci:
+    name: "Run checks, tests, and docs over ${{matrix.otp_vsn}} and ${{matrix.os}}"
+    runs-on: "${{matrix.os}}"
+    env:
+      GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+    container:
+      image: "erlang:${{matrix.otp_vsn}}"
+    strategy:
+      matrix:
+        otp_vsn: ["19.3", "21.3", "22.3", "23.2"] # omitting 20.3 due to TLS issue
+        os: ["ubuntu-latest"]
+    steps:
+      - uses: "actions/checkout@v2"
+      - run: "make coveralls"
