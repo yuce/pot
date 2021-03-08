@@ -15,7 +15,7 @@ cover: test
 	$(REBAR) cover --verbose
 
 coveralls: compile cover
-	$(REBAR) coveralls send
+	$(REBAR) as test coveralls send
 
 release:
 	rebar3 hex publish
