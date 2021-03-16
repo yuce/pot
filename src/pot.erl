@@ -90,8 +90,8 @@ hotp(Secret, IntervalsNo, Opts) ->
     TokenLength = proplists:get_value(token_length, Opts, 6),
     Key = pot_base32:decode(Secret),
     Msg = <<IntervalsNo:8/big-unsigned-integer-unit:8>>,
-    Digest = crypto:hmac(DigestMethod, Key, Msg),
-    <<_:19/binary, Ob:8>> = Digest,
+    Digest = hmac(DigestMethod, Key, Msg),
+    <<Ob:8>> = binary:part(Digest, {byte_size(Digest), -1}),
     O = Ob band 15,
     <<TokenBase0:4/integer-unit:8>> = binary:part(Digest, O, 4),
     TokenBase = TokenBase0 band 16#7fffffff,
@@ -205,3 +205,16 @@ valid_hotp_return(LastInterval, true = _ReturnInterval) ->
     {true, LastInterval};
 valid_hotp_return(_LastInterval, _ReturnInterval) ->
     true.
+
+-ifdef(OTP_RELEASE).
+-if(?OTP_RELEASE >= 23).
+hmac(DigestMethod, Key, Msg) ->
+    crypto:mac(hmac, DigestMethod, Key, Msg).
+-else.
+hmac(DigestMethod, K, S) ->
+    crypto:hmac(DigestMethod, K, S).
+-endif.
+-else.
+hmac(DigestMethod, K, S) ->
+    crypto:hmac(DigestMethod, K, S).
+-endif.
