@@ -30,6 +30,13 @@ In order to learn more about one time password generation, see the following Wik
 
 ## Version History
 
+### 2021-03-28
+
+- Released version 1.0.1 with the following changes:
+
+    * [Migrate from Travis to GitHub Actions](https://github.com/yuce/pot/pull/31/commits/9aeab637e26d43362b2239960a0c1c0212a2174b) (Thanks to Nicholas Lundgaard)
+    * [Update pot.erl to support sha256 and not use deprecated :crypto.hmac](https://github.com/yuce/pot/commit/f96b50d00568154aabff7f956b974ad295c38fd6) (Thanks to Francois Paul)
+
 ### 2020-09-15
 
 - Released version 1.0.0 with the following changes:
@@ -449,7 +456,7 @@ Thanks to [contributors](CONTRIBUTORS).
 
 ## License
 
-Copyright (c) 2014-2020 POT Contributors
+Copyright (c) 2014-2021 POT Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software
 and associated documentation files (the "Software"), to deal in the Software without
