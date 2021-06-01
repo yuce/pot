@@ -65,14 +65,14 @@
 -type valid_totp_option() :: totp_option() |
                              {window, non_neg_integer()}.
 
--type hotp_options() :: [hotp_option()].
--type totp_options() :: [totp_option()].
+-type hotp_options() :: [hotp_option() | proplists:property()].
+-type totp_options() :: [totp_option() | proplists:property()].
 
--type valid_token_options() :: [token_option()].
--type valid_hotp_options() :: [valid_hotp_option()].
--type valid_totp_options() :: [valid_totp_option()].
+-type valid_token_options() :: [token_option() | proplists:property()].
+-type valid_hotp_options() :: [valid_hotp_option() | proplists:property()].
+-type valid_totp_options() :: [valid_totp_option() | proplists:property()].
 
--type time_interval_options() :: [time_interval_option()].
+-type time_interval_options() :: [time_interval_option() | proplists:property()].
 
 -type valid_hotp_return() :: boolean() | {true, LastInterval :: interval()}.
 
