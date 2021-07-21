@@ -17,7 +17,7 @@ jobs:
       image: "erlang:${{matrix.otp_vsn}}"
     strategy:
       matrix:
-        otp_vsn: ["19.3", "21.3", "22.3", "23.2"] # omitting 20.3 due to TLS issue
+        otp_vsn: ["19.3", "21.3", "22.3", "23.2", "24.0"] # omitting 20.3 due to TLS issue
         os: ["ubuntu-latest"]
     steps:
       - uses: "actions/checkout@v2"
