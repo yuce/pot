@@ -30,6 +30,13 @@ In order to learn more about one time password generation, see the following Wik
 
 ## Version History
 
+### 2021-08-07
+
+- Released version 1.0.2 with the following changes:
+
+  * [Fix type specs](https://github.com/yuce/pot/pull/33/commits/359779a068b478e48ee9e958f3ebb076ac3476d2) (Thanks to Krzysztof Jurewicz)
+  * [Added OTP 24.0 to CI](https://github.com/yuce/pot/pull/34/commits/2cfb7f9a07e3adac2540ffbfd7666485065c025f) (Thanks to Julius Beckmann)
+
 ### 2021-03-28
 
 - Released version 1.0.1 with the following changes:
