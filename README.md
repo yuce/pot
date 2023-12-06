@@ -115,7 +115,7 @@ Include POT in your `mix.exs` as a dependency:
 
 ```elixir
 defp deps do
-    [{:pot, "~>1.0.2"}]
+    [{:pot, "~> 1.0"}]
 end
 ```
 
