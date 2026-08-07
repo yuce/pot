@@ -12,7 +12,9 @@ totp_validity_test_() ->
       fun validating_invalid_token_hotp/1,
       fun validating_correct_hotp_as_totp/1,
       fun validating_past_future_totp_too_small_window/1,
-      fun validating_past_future_totp_with_window/1]}.
+      fun validating_past_future_totp_with_window/1,
+      fun retrieving_proper_interval_from_validator/1,
+      fun retrieving_window_matched_interval_from_validator/1]}.
 
 
 start() ->
@@ -55,3 +57,25 @@ validating_past_future_totp_with_window(Secret) ->
                              Secret,
                              [{window, W} | IntervalOpts]))
      || W <- lists:seq(0, N), AW <- lists:seq(-N, N), W >= abs(AW)].
+
+
+retrieving_proper_interval_from_validator(Secret) ->
+    Timestamp = {1518, 179058, 919315},
+    Interval = pot:time_interval([{timestamp, Timestamp}]),
+    Totp = pot:totp(Secret, [{timestamp, Timestamp}]),
+    [?_assert(pot:valid_totp(Totp, Secret, [{timestamp, Timestamp}])),
+     ?_assert(pot:valid_totp(Totp, Secret, [{timestamp, Timestamp},
+                                            {return_interval, false}])),
+     ?_assertEqual({true, Interval},
+                   pot:valid_totp(Totp, Secret, [{timestamp, Timestamp},
+                                                 {return_interval, true}]))].
+
+
+retrieving_window_matched_interval_from_validator(Secret) ->
+    Timestamp = {1518, 179058, 919315},
+    Interval = pot:time_interval([{timestamp, Timestamp}]),
+    Totp = pot:totp(Secret, [{timestamp, Timestamp}, {addwindow, -1}]),
+    [?_assertEqual({true, Interval - 1},
+                   pot:valid_totp(Totp, Secret, [{timestamp, Timestamp},
+                                                 {window, 1},
+                                                 {return_interval, true}]))].

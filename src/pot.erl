@@ -63,6 +63,7 @@
                              {trials, pos_integer()}.
 
 -type valid_totp_option() :: totp_option() |
+                             return_interval | {return_interval, boolean()} |
                              {window, non_neg_integer()}.
 
 -type hotp_options() :: [hotp_option() | proplists:property()].
@@ -75,6 +76,7 @@
 -type time_interval_options() :: [time_interval_option() | proplists:property()].
 
 -type valid_hotp_return() :: boolean() | {true, LastInterval :: interval()}.
+-type valid_totp_return() :: boolean() | {true, LastInterval :: interval()}.
 
 %%==============================================================================
 %% Token generation
@@ -151,21 +153,22 @@ valid_hotp(Token, Secret, Opts) ->
 valid_totp(Token, Secret) ->
     valid_totp(Token, Secret, []).
 
--spec valid_totp(token(), secret(), valid_totp_options()) -> boolean().
+-spec valid_totp(token(), secret(), valid_totp_options()) -> valid_totp_return().
 valid_totp(Token, Secret, Opts) ->
     case valid_token(Token, Opts) of
         true ->
+            ReturnInterval = proplists:get_value(return_interval, Opts, false),
             IntervalsNo = time_interval(Opts),
             case totp(Secret, Opts) of
                 Token ->
-                    true;
+                    valid_totp_return(IntervalsNo, ReturnInterval);
                 _ ->
                     Window = proplists:get_value(window, Opts, 0),
                     case check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) of
                         false ->
                             false;
-                        _ ->
-                            true
+                        LastInterval ->
+                            valid_totp_return(LastInterval, ReturnInterval)
                     end
             end;
         _ ->
@@ -204,6 +207,12 @@ prepend_zeros(Token, N) ->
 valid_hotp_return(LastInterval, true = _ReturnInterval) ->
     {true, LastInterval};
 valid_hotp_return(_LastInterval, _ReturnInterval) ->
+    true.
+
+-spec valid_totp_return(interval(), boolean()) -> valid_totp_return().
+valid_totp_return(LastInterval, true = _ReturnInterval) ->
+    {true, LastInterval};
+valid_totp_return(_LastInterval, _ReturnInterval) ->
     true.
 
 -ifdef(OTP_RELEASE).
