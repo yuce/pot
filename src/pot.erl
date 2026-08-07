@@ -50,6 +50,7 @@
 
 -type time_interval_option() :: {addwindow, integer()} |
                                 {interval_length, pos_integer()} |
+                                {unix_time, integer()} |
                                 {timestamp, erlang:timestamp()}.
 
 -type hotp_option() :: token_option() |
@@ -178,10 +179,21 @@ valid_totp(Token, Secret, Opts) ->
 
 -spec time_interval(time_interval_options()) -> interval().
 time_interval(Opts) ->
-  IntervalLength = proplists:get_value(interval_length, Opts, 30),
-  AddSeconds = proplists:get_value(addwindow, Opts, 0) * proplists:get_value(interval_length, Opts, 30),
-  {MegaSecs, Secs, _} = proplists:get_value(timestamp, Opts, os:timestamp()),
-  trunc((MegaSecs * 1000000 + (Secs + AddSeconds)) / IntervalLength).
+    IntervalLength = proplists:get_value(interval_length, Opts, 30),
+    AddSeconds = proplists:get_value(addwindow, Opts, 0) * IntervalLength,
+    trunc((unix_time(Opts) + AddSeconds) / IntervalLength).
+
+-spec unix_time(time_interval_options()) -> integer().
+unix_time(Opts) ->
+    case proplists:get_value(unix_time, Opts) of
+        undefined ->
+            case proplists:get_value(timestamp, Opts) of
+                undefined -> erlang:system_time(second);
+                {MegaSecs, Secs, _} -> MegaSecs * 1000000 + Secs
+            end;
+        UnixTime ->
+            UnixTime
+    end.
 
 -spec check_candidate(token(), secret(), interval(), interval(), hotp_options()) ->
     interval() | false.
