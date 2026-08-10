@@ -14,7 +14,9 @@ totp_validity_test_() ->
       fun validating_past_future_totp_too_small_window/1,
       fun validating_past_future_totp_with_window/1,
       fun retrieving_proper_interval_from_validator/1,
-      fun retrieving_window_matched_interval_from_validator/1]}.
+      fun retrieving_window_matched_interval_from_validator/1,
+      fun rejecting_wrapped_interval_from_validator/1,
+      fun retrieving_latest_interval_from_validator/1]}.
 
 
 start() ->
@@ -78,4 +80,25 @@ retrieving_window_matched_interval_from_validator(Secret) ->
     [?_assertEqual({true, Interval - 1},
                    pot:valid_totp(Totp, Secret, [{timestamp, Timestamp},
                                                  {window, 1},
+                                                 {return_interval, true}]))].
+
+
+rejecting_wrapped_interval_from_validator(Secret) ->
+    Timestamp = {0, 0, 0},
+    Totp = pot:hotp(Secret, 16#ffffffffffffffff),
+    [?_assertNot(pot:valid_totp(Totp, Secret, [{timestamp, Timestamp},
+                                                {window, 1}]))].
+
+
+retrieving_latest_interval_from_validator(_) ->
+    Secret = <<"GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ">>,
+    Earlier = 336,
+    Later = 2205,
+    Current = Later + 1,
+    Window = Current - Earlier,
+    Totp = pot:hotp(Secret, Earlier),
+    [?_assertEqual(Totp, pot:hotp(Secret, Later)),
+     ?_assertEqual({true, Later},
+                   pot:valid_totp(Totp, Secret, [{timestamp, {0, Current * 30, 0}},
+                                                 {window, Window},
                                                  {return_interval, true}]))].

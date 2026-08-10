@@ -159,17 +159,15 @@ valid_totp(Token, Secret, Opts) ->
         true ->
             ReturnInterval = proplists:get_value(return_interval, Opts, false),
             IntervalsNo = time_interval(Opts),
-            case totp(Secret, Opts) of
-                Token ->
-                    valid_totp_return(IntervalsNo, ReturnInterval);
-                _ ->
-                    Window = proplists:get_value(window, Opts, 0),
-                    case check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) of
-                        false ->
-                            false;
-                        LastInterval ->
-                            valid_totp_return(LastInterval, ReturnInterval)
-                    end
+            Window = proplists:get_value(window, Opts, 0),
+            FirstInterval = max(0, IntervalsNo - Window),
+            LastInterval = min(16#ffffffffffffffff, IntervalsNo + Window),
+            case check_totp_candidate(Token, Secret, FirstInterval,
+                                      LastInterval, Opts, false) of
+                false ->
+                    false;
+                MatchedInterval ->
+                    valid_totp_return(MatchedInterval, ReturnInterval)
             end;
         _ ->
             false
@@ -197,6 +195,17 @@ check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
     end;
 check_candidate(_Token, _Secret, _Current, _Last, _Opts) ->
     false.
+
+-spec check_totp_candidate(token(), secret(), interval(), interval(), hotp_options(),
+                           interval() | false) -> interval() | false.
+check_totp_candidate(Token, Secret, Current, Last, Opts, Best) when Current =< Last ->
+    NextBest = case Token == hotp(Secret, Current, Opts) of
+        true -> Current;
+        false -> Best
+    end,
+    check_totp_candidate(Token, Secret, Current + 1, Last, Opts, NextBest);
+check_totp_candidate(_Token, _Secret, _Current, _Last, _Opts, Best) ->
+    Best.
 
 -spec prepend_zeros(token(), non_neg_integer()) -> token().
 prepend_zeros(Token, N) ->
