@@ -12,7 +12,8 @@ totp_validity_test_() ->
       fun validating_invalid_token_hotp/1,
       fun validating_correct_hotp_as_totp/1,
       fun validating_past_future_totp_too_small_window/1,
-      fun validating_past_future_totp_with_window/1]}.
+      fun validating_past_future_totp_with_window/1,
+      fun validating_totp_with_raw_secret/1]}.
 
 
 start() ->
@@ -55,3 +56,11 @@ validating_past_future_totp_with_window(Secret) ->
                              Secret,
                              [{window, W} | IntervalOpts]))
      || W <- lists:seq(0, N), AW <- lists:seq(-N, N), W >= abs(AW)].
+
+
+validating_totp_with_raw_secret(Secret) ->
+    RawSecret = pot_base32:decode(Secret),
+    UnixTime = 1518179058,
+    Token = pot:totp(Secret, [{unix_time, UnixTime}]),
+    [?_assert(pot:valid_totp(Token, RawSecret, [{secret_encoding, raw},
+                                                {unix_time, UnixTime}]))].

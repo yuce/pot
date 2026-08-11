@@ -130,7 +130,7 @@ The functions below refer to the following common parameters:
 | `Token`    | string\* |
 
 - `Interval` is an integer that represents the counter value, the "moving factor" referenced in [RFC 4226][rfc4226]. It is an 8 byte unsigned integer; if a negative and/or too large integer is passed, it will be 2's complemented and truncated appropriately.
-- `Secret` is a base-32-encoded secret key. Generally, it should be at least 128 bits, preferably 160 bits. 
+- `Secret` is a base-32-encoded secret key by default. Generally, it should be at least 128 bits, preferably 160 bits. Use `{secret_encoding, raw}` when passing the raw binary key bytes directly.
 - `Token` is a HOTP/TOTP value represented as a string\*. This is generally a 6-digit number, e.g., "123456", but its length may be modulated with the `token_length` option.
 
 \*Note: for [Erlang][erlang] uses of `pot`, all strings should be in `binary()` format.
@@ -157,12 +157,14 @@ Elixir:
 
 The following `Options` are allowed:
 
-| Option          | Type        | Default |
-|-----------------|-------------|---------|
-| `digest_method` | atom        | sha     |
-| `token_length`  | integer > 0 | 6       |
+| Option            | Type              | Default |
+|-------------------|-------------------|---------|
+| `digest_method`   | atom              | sha     |
+| `secret_encoding` | `base32` or `raw` | base32  |
+| `token_length`    | integer > 0       | 6       |
 
 - `digest_method` controls the signing algorithm passed to the [Erlang][erlang] `crypto` module's [`hmac`][crypto_hmac] function. For [RFC 4226][rfc4226] compliant tokens, it must be set to `sha`. For [RFC 6238][rfc6238] compliant tokens, additional values such as `sha256` or `sha512` may be used.
+- `secret_encoding` controls how `Secret` is interpreted, either as a base 32 binary (`base32`) or raw bytes binary (`raw`).
 - `token_length` controls the number of digits in output `Token`.
 
 #### `totp/1,2`
@@ -185,13 +187,14 @@ Elixir:
 
 The following `Options` are allowed:
 
-| Option            | Type        | Default/Reference        |
-|-------------------|-------------|--------------------------|
-| `addwindow`       | integer     | 0                        |
-| `digest_method`   | atom        | from [hotp/2,3](#hotp23) |
-| `interval_length` | integer > 0 | 30                       |
-| `timestamp`       | timestamp   | [`os:timestamp()`][ts]   |
-| `token_length`    | integer > 0 | from [hotp/2,3](#hotp23) |
+| Option            | Type              | Default/Reference                           |
+|-------------------|-------------------|---------------------------------------------|
+| `addwindow`       | integer           | 0                                           |
+| `digest_method`   | atom              | from [hotp/2,3](#hotp23)                    |
+| `interval_length` | integer > 0       | 30                                          |
+| `secret_encoding` | `base32` or `raw` | from [hotp/2,3](#hotp23)                    |
+| `timestamp`       | timestamp         | [`os:timestamp()`][ts]                      |
+| `token_length`    | integer > 0       | from [hotp/2,3](#hotp23)                    |
 
 - `addwindow` acts as an offset to the `Interval` extrapolated from dividing the `timestamp` by the `interval_length` per the algorithm described in [RFC 6238][rfc6238].
 - `interval_length` controls the number of seconds for the `Interval` computation.
@@ -243,13 +246,14 @@ Elixir:
 
 The following `Options` are allowed:
 
-| Option            | Type        | Default/Reference        |
-|-------------------|-------------|--------------------------|
-| `digest_method`   | atom        | from [hotp/2,3](#hotp23) |
-| `last`            | integer     | 1                        |
-| `return_interval` | boolean     | false                     |
-| `token_length`    | integer > 0 | from [hotp/2,3](#hotp23) |
-| `trials`          | integer > 0 | 1000                     |
+| Option            | Type              | Default/Reference        |
+|-------------------|-------------------|--------------------------|
+| `digest_method`   | atom              | from [hotp/2,3](#hotp23) |
+| `last`            | integer           | 1                        |
+| `return_interval` | boolean           | false                    |
+| `secret_encoding` | `base32` or `raw` | from [hotp/2,3](#hotp23) |
+| `token_length`    | integer > 0       | from [hotp/2,3](#hotp23) |
+| `trials`          | integer > 0       | 1000                     |
 
 - `last` is the `Interval` value of the previous valid `Token`; the next `Interval` after `last` is used as the first candidate for validating the `Token`.
 - `trials` controls the number of incremental `Interval` values after `last` to try when validating the `Token`. If a matching candidate is not found within `trials` attempts, the `Token` is considered invalid.
@@ -275,14 +279,15 @@ Elixir:
 
 The following `Options` are allowed:
 
-| Option            | Type        | Default/Reference        |
-|-------------------|-------------|--------------------------|
-| `addwindow`       | integer     | from [totp/1,2](#totp12) |
-| `digest_method`   | atom        | from [hotp/2,3](#hotp23) |
-| `interval_length` | integer > 0 | from [totp/1,2](#totp12) |
-| `timestamp`       | timestamp   | from [totp/1,2](#totp12) |
-| `token_length`    | integer > 0 | from [hotp/2,3](#hotp23) |
-| `window`          | integer > 0 | 0                        |
+| Option            | Type              | Default/Reference        |
+|-------------------|-------------------|--------------------------|
+| `addwindow`       | integer           | from [totp/1,2](#totp12) |
+| `digest_method`   | atom              | from [hotp/2,3](#hotp23) |
+| `interval_length` | integer > 0       | from [totp/1,2](#totp12) |
+| `secret_encoding` | `base32` or `raw` | from [hotp/2,3](#hotp23) |
+| `timestamp`       | timestamp         | from [totp/1,2](#totp12) |
+| `token_length`    | integer > 0       | from [hotp/2,3](#hotp23) |
+| `window`          | integer > 0       | 0                        |
 
 - `window` is a range used for expanding `Interval` value derived from the `timestamp`. This is done by considering the `window` `Interval`s before *and* after the one derived from the `timestamp`. This allows validation to be relaxed to allow for successful validation of TOTP `Token`s generated by clients with some degree of unknown clock drift from the server, as well as some client entry delay. 
 
