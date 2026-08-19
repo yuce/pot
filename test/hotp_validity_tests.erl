@@ -17,7 +17,8 @@ checking_hotp_validity_without_range_test_() ->
       fun validating_correct_totp_as_hotp/1,
       fun retrieving_proper_interval_from_validator/1,
       fun hotp_for_range_exact_match/1,
-      fun hotp_for_range_preceding_match/1]}.
+      fun hotp_for_range_preceding_match/1,
+      fun validating_hotp_with_raw_secret/1]}.
 
 
 start() ->
@@ -89,3 +90,9 @@ hotp_for_range_preceding_match(_) ->
      ?_assertNot(pot:valid_hotp(Hotp, Secret, [{last, 1}, {trials, 2},
                                                {return_interval, true}])),
      ?_assertEqual(pot:hotp(Secret, 4), Hotp)].
+
+
+validating_hotp_with_raw_secret(Secret) ->
+    RawSecret = pot_base32:decode(Secret),
+    Token = pot:hotp(Secret, 123),
+    [?_assert(pot:valid_hotp(Token, RawSecret, [{secret_encoding, raw}]))].

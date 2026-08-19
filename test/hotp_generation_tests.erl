@@ -11,6 +11,7 @@ all_test_() ->
       fun hotp_generation_for_different_intervals/1,
       fun hotp_generation_with_padding/1,
       fun hotp_generation_with_multiple_padding/1,
+      fun hotp_generation_with_raw_secret/1,
       fun hotp_generation_unsigned_interval/1]}.
 
 
@@ -39,6 +40,12 @@ hotp_generation_with_padding(#{secret1 := Secret}) ->
 
 hotp_generation_with_multiple_padding(#{secret2 := Secret}) ->
    [?_assertEqual(pot:hotp(Secret, 48930987), <<"000371">>)].
+
+
+hotp_generation_with_raw_secret(#{secret1 := Secret}) ->
+    RawSecret = pot_base32:decode(Secret),
+    [?_assertEqual(pot:hotp(Secret, 1),
+                   pot:hotp(RawSecret, 1, [{secret_encoding, raw}]))].
 
 
 hotp_generation_unsigned_interval(#{secret1 := Secret}) ->

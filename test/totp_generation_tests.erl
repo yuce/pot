@@ -13,6 +13,11 @@ generating_totp_for_given_timestamp_and_compare_test_() ->
         fun stop/1,
         fun generating_totp_for_given_timestamp_and_compare/1}.
 
+generating_totp_with_raw_secret_test_() ->
+    {setup, fun start/0,
+        fun stop/1,
+        fun generating_totp_with_raw_secret/1}.
+
 start() ->
     ok.
 
@@ -33,3 +38,11 @@ generating_totp_for_given_timestamp_and_compare(_) ->
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     Totp = pot:totp(Secret, [{timestamp, {1518, 179058, 919315}}]),
     [?_assertEqual(Totp, <<"151469">>)].
+
+generating_totp_with_raw_secret(_) ->
+    Secret = <<"MFRGGZDFMZTWQ2LK">>,
+    RawSecret = pot_base32:decode(Secret),
+    UnixTime = 1518179058,
+    [?_assertEqual(pot:totp(Secret, [{unix_time, UnixTime}]),
+                   pot:totp(RawSecret, [{secret_encoding, raw},
+                                        {unix_time, UnixTime}]))].

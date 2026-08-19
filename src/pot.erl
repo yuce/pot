@@ -52,7 +52,10 @@
                                 {interval_length, pos_integer()} |
                                 {timestamp, erlang:timestamp()}.
 
+-type secret_encoding() :: base32 | raw.
+
 -type hotp_option() :: token_option() |
+                       {secret_encoding, secret_encoding()} |
                        {digest_method, atom()}.
 
 -type totp_option() :: hotp_option() | time_interval_option().
@@ -88,7 +91,7 @@ hotp(Secret, IntervalsNo) ->
 hotp(Secret, IntervalsNo, Opts) ->
     DigestMethod = proplists:get_value(digest_method, Opts, sha),
     TokenLength = proplists:get_value(token_length, Opts, 6),
-    Key = pot_base32:decode(Secret),
+    Key = secret_key(Secret, Opts),
     Msg = <<IntervalsNo:8/big-unsigned-integer-unit:8>>,
     Digest = hmac(DigestMethod, Key, Msg),
     <<Ob:8>> = binary:part(Digest, {byte_size(Digest), -1}),
@@ -175,6 +178,13 @@ valid_totp(Token, Secret, Opts) ->
 %%==============================================================================
 %% Internal functions
 %%==============================================================================
+
+-spec secret_key(secret(), hotp_options()) -> binary().
+secret_key(Secret, Opts) ->
+    case proplists:get_value(secret_encoding, Opts, base32) of
+        base32 -> pot_base32:decode(Secret);
+        raw -> Secret
+    end.
 
 -spec time_interval(time_interval_options()) -> interval().
 time_interval(Opts) ->
