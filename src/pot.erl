@@ -63,6 +63,7 @@
                              {trials, pos_integer()}.
 
 -type valid_totp_option() :: totp_option() |
+                             return_interval | {return_interval, boolean()} |
                              {window, non_neg_integer()}.
 
 -type hotp_options() :: [hotp_option() | proplists:property()].
@@ -75,6 +76,7 @@
 -type time_interval_options() :: [time_interval_option() | proplists:property()].
 
 -type valid_hotp_return() :: boolean() | {true, LastInterval :: interval()}.
+-type valid_totp_return() :: boolean() | {true, LastInterval :: interval()}.
 
 %%==============================================================================
 %% Token generation
@@ -151,22 +153,21 @@ valid_hotp(Token, Secret, Opts) ->
 valid_totp(Token, Secret) ->
     valid_totp(Token, Secret, []).
 
--spec valid_totp(token(), secret(), valid_totp_options()) -> boolean().
+-spec valid_totp(token(), secret(), valid_totp_options()) -> valid_totp_return().
 valid_totp(Token, Secret, Opts) ->
     case valid_token(Token, Opts) of
         true ->
+            ReturnInterval = proplists:get_value(return_interval, Opts, false),
             IntervalsNo = time_interval(Opts),
-            case totp(Secret, Opts) of
-                Token ->
-                    true;
-                _ ->
-                    Window = proplists:get_value(window, Opts, 0),
-                    case check_candidate(Token, Secret, IntervalsNo - Window, IntervalsNo + Window, Opts) of
-                        false ->
-                            false;
-                        _ ->
-                            true
-                    end
+            Window = proplists:get_value(window, Opts, 0),
+            FirstInterval = max(0, IntervalsNo - Window),
+            LastInterval = min(16#ffffffffffffffff, IntervalsNo + Window),
+            case check_totp_candidate(Token, Secret, FirstInterval,
+                                      LastInterval, Opts, false) of
+                false ->
+                    false;
+                MatchedInterval ->
+                    valid_totp_return(MatchedInterval, ReturnInterval)
             end;
         _ ->
             false
@@ -195,6 +196,17 @@ check_candidate(Token, Secret, Current, Last, Opts) when Current =< Last ->
 check_candidate(_Token, _Secret, _Current, _Last, _Opts) ->
     false.
 
+-spec check_totp_candidate(token(), secret(), interval(), interval(), hotp_options(),
+                           interval() | false) -> interval() | false.
+check_totp_candidate(Token, Secret, Current, Last, Opts, Best) when Current =< Last ->
+    NextBest = case Token == hotp(Secret, Current, Opts) of
+        true -> Current;
+        false -> Best
+    end,
+    check_totp_candidate(Token, Secret, Current + 1, Last, Opts, NextBest);
+check_totp_candidate(_Token, _Secret, _Current, _Last, _Opts, Best) ->
+    Best.
+
 -spec prepend_zeros(token(), non_neg_integer()) -> token().
 prepend_zeros(Token, N) ->
     Padding = << <<48:8>> || _ <- lists:seq(1, N) >>,
@@ -204,6 +216,12 @@ prepend_zeros(Token, N) ->
 valid_hotp_return(LastInterval, true = _ReturnInterval) ->
     {true, LastInterval};
 valid_hotp_return(_LastInterval, _ReturnInterval) ->
+    true.
+
+-spec valid_totp_return(interval(), boolean()) -> valid_totp_return().
+valid_totp_return(LastInterval, true = _ReturnInterval) ->
+    {true, LastInterval};
+valid_totp_return(_LastInterval, _ReturnInterval) ->
     true.
 
 -ifdef(OTP_RELEASE).
