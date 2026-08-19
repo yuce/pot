@@ -13,6 +13,16 @@ generating_totp_for_given_timestamp_and_compare_test_() ->
         fun stop/1,
         fun generating_totp_for_given_timestamp_and_compare/1}.
 
+generating_totp_for_given_unix_time_and_compare_test_() ->
+    {setup, fun start/0,
+        fun stop/1,
+        fun generating_totp_for_given_unix_time_and_compare/1}.
+
+generating_post_2038_totp_for_given_unix_time_test_() ->
+    {setup, fun start/0,
+        fun stop/1,
+        fun generating_post_2038_totp_for_given_unix_time/1}.
+
 start() ->
     ok.
 
@@ -33,3 +43,16 @@ generating_totp_for_given_timestamp_and_compare(_) ->
     Secret = <<"MFRGGZDFMZTWQ2LK">>,
     Totp = pot:totp(Secret, [{timestamp, {1518, 179058, 919315}}]),
     [?_assertEqual(Totp, <<"151469">>)].
+
+generating_totp_for_given_unix_time_and_compare(_) ->
+    Secret = <<"MFRGGZDFMZTWQ2LK">>,
+    UnixTime = 1518179058,
+    Totp = pot:totp(Secret, [{unix_time, UnixTime}]),
+    [?_assertEqual(Totp, <<"151469">>)].
+
+generating_post_2038_totp_for_given_unix_time(_) ->
+    Secret = <<"MFRGGZDFMZTWQ2LK">>,
+    UnixTime = 20000000000,
+    Totp = pot:totp(Secret, [{unix_time, UnixTime}]),
+    Hotp = pot:hotp(Secret, UnixTime div 30),
+    [?_assertEqual(Hotp, Totp)].
